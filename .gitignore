@@ -398,3 +398,7 @@ Temporary Items
 dist
 .webpack
 .serverless/**/*.zip
+
+# Turbo & Next.js
+.turbo
+.next
