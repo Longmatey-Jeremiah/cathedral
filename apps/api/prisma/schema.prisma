@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserStatus {
+  ACTIVE
+  PENDING
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  FINANCE
+  DEPARTMENT_LEADER
+  VIEWER
+}
+
+model Church {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique
+  address   String?
+  phone     String?
+  email     String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users   User[]
+  invites UserInvite[]
+
+  @@index([slug])
+}
+
+model User {
+  id                 String     @id @default(uuid())
+  email              String     @unique
+  password           String?
+  firstName          String?
+  lastName           String?
+  role               UserRole
+  status             UserStatus @default(PENDING)
+  mustChangePassword Boolean    @default(false)
+  churchId           String?
+  church             Church?    @relation(fields: [churchId], references: [id], onDelete: Cascade)
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+
+  @@index([email])
+  @@index([churchId])
+}
+
+model UserInvite {
+  id        String   @id @default(uuid())
+  email     String
+  role      UserRole
+  tokenHash String
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  churchId  String?
+  church    Church?  @relation(fields: [churchId], references: [id], onDelete: Cascade)
+
+  @@index([email])
+  @@index([tokenHash])
+  @@index([churchId])
+}

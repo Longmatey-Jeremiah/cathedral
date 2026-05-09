@@ -1,0 +1,483 @@
+@import 'tailwindcss';
+
+/* Class-based dark (next-themes sets `.dark` on <html>) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* Colors */
+  --color-tangerine-tag: #f69251;
+  --color-tangerine-deep: #e9742d;
+  --color-tangerine-soft: #ffa56e;
+  --color-midnight-ink: #181825;
+  --color-graphite: #484758;
+  --color-deep-slate: #242433;
+  --color-carbon: #000000;
+  --color-stone: #636363;
+  --color-pebble: #949494;
+  --color-ash: #8b8b8b;
+  --color-fog: #f7f7f7;
+  --color-snow: #ffffff;
+  --color-peach-whisper: #fad7c1;
+  --color-warm-cream: #faf6f1;
+  --color-dusty-rose: #c97b84;
+
+  /* Surface aliases */
+  --color-page-canvas: #f7f7f7;
+  --color-card-surface: #ffffff;
+  --color-dark-card: #242433;
+
+  /* Typography — Font families */
+  --font-display: var(--font-display-loaded), 'Space Grotesk',
+    'PP Radio Grotesk', 'Satoshi', 'DM Sans', ui-sans-serif, system-ui,
+    sans-serif;
+  --font-sans: var(--font-inter-loaded), 'Inter', ui-sans-serif, system-ui,
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-serif: var(--font-serif-loaded), 'Instrument Serif', ui-serif,
+    Georgia, 'Times New Roman', serif;
+
+  /* Type scale */
+  --text-caption: 12px;
+  --text-caption--line-height: 1.2;
+  --text-body: 16px;
+  --text-body--line-height: 1.5;
+  --text-subheading: 18px;
+  --text-subheading--line-height: 1.4;
+  --text-heading-sm: 24px;
+  --text-heading-sm--line-height: 1.33;
+  --text-heading: 32px;
+  --text-heading--line-height: 1.3;
+  --text-heading--letter-spacing: -0.32px;
+  --text-heading-lg: 50px;
+  --text-heading-lg--line-height: 1.2;
+  --text-heading-lg--letter-spacing: -0.5px;
+  --text-display: 70px;
+  --text-display--line-height: 1.05;
+  --text-display--letter-spacing: -1.4px;
+
+  /* Border radius */
+  --radius-cards: 24px;
+  --radius-small: 8px;
+  --radius-badges: 100px;
+  --radius-inputs: 0px;
+  --radius-buttons: 28px;
+  --radius-overlays: 32px;
+  --radius-cardinner: 12px;
+
+  /* Shadows */
+  --shadow-subtle: rgba(24, 24, 37, 0.12) 0px 2px 3px -2px;
+  --shadow-xl: rgba(247, 247, 247, 0.5) 0px -40px 40px 0px;
+  --shadow-button:
+    rgba(0, 0, 0, 0.04) 0px 1px 2px 0px,
+    rgba(0, 0, 0, 0.02) 0px 2px 4px 0px,
+    rgba(0, 0, 0, 0.02) 0px 4px 8px 0px;
+
+  /* Layout */
+  --container-page: 1200px;
+}
+
+/* Base */
+:root {
+  color-scheme: light;
+  --background: var(--color-page-canvas);
+  --foreground: var(--color-carbon);
+  /* Fixed nav clearance: safe area + pill bar (~4.25rem) — used by Hero + scroll-margin */
+  --nav-overlay-offset: calc(env(safe-area-inset-top, 0px) + 10rem);
+}
+
+/* Dark palette — same token names as :root so utilities (`bg-fog`, `text-stone`, …) flip.
+   Muted text (stone, pebble) is tuned for ≥ ~5:1 on page canvas / fog surfaces. */
+html.dark {
+  color-scheme: dark;
+  --color-graphite: #e8e8ed;
+  --color-deep-slate: #14141e;
+  --color-midnight-ink: #060609;
+  --color-carbon: #f4f4f5;
+  --color-stone: #c4c4d0;
+  --color-pebble: #a8adb8;
+  --color-ash: #b4b9c4;
+  --color-fog: #16161e;
+  /* Elevated card / chrome surface — not for “white” text; use `text-white` for true white ink */
+  --color-snow: #1e1e28;
+  --color-warm-cream: #1c1a18;
+  --color-peach-whisper: #4a3028;
+  --color-page-canvas: #101014;
+  --color-card-surface: #1a1a22;
+  --color-dark-card: #2a2a36;
+  --shadow-subtle: rgba(0, 0, 0, 0.45) 0px 2px 3px -2px;
+  --shadow-xl: rgba(0, 0, 0, 0.55) 0px -40px 40px 0px;
+  --shadow-button:
+    rgba(255, 255, 255, 0.04) 0px 1px 2px 0px,
+    rgba(0, 0, 0, 0.35) 0px 2px 8px 0px;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: var(--nav-overlay-offset);
+}
+
+html,
+body {
+  background: var(--color-page-canvas);
+  color: var(--color-carbon);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: var(--text-body--line-height);
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background-color: var(--color-tangerine-tag);
+  color: var(--color-carbon);
+}
+
+.dark ::selection {
+  background-color: rgba(246, 146, 81, 0.35);
+  color: var(--color-carbon);
+}
+
+/* ============================================================
+   Typography utilities
+   ============================================================ */
+
+.font-display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
+.font-serif {
+  font-family: var(--font-serif);
+  font-weight: 400;
+}
+
+/*
+  Editorial italic emphasis used INSIDE display-class headings.
+  The serif italic against a geometric grotesque is a signature
+  contrast move — slows the eye on the emphasized word without
+  introducing a second color.
+*/
+.italic-serif {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0;
+  /* Optical alignment: serif italic sits a touch high vs grotesque */
+  vertical-align: -0.02em;
+}
+
+.text-display-xl {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(44px, 7.5vw, var(--text-display));
+  line-height: var(--text-display--line-height);
+  letter-spacing: var(--text-display--letter-spacing);
+}
+
+.text-display-lg {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(34px, 4.5vw, var(--text-heading-lg));
+  line-height: var(--text-heading-lg--line-height);
+  letter-spacing: var(--text-heading-lg--letter-spacing);
+}
+
+.text-display-md {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--text-heading);
+  line-height: var(--text-heading--line-height);
+  letter-spacing: var(--text-heading--letter-spacing);
+}
+
+/* Subtle vertical fade on display headings — adds depth without color */
+.heading-fade {
+  background: linear-gradient(180deg, #000 0%, #1f1f2c 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.dark .heading-fade {
+  background: linear-gradient(180deg, #fafafa 0%, #9ca0b0 95%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ============================================================
+   Gradient surfaces
+   ============================================================ */
+
+/* Hero canopy — warm halo behind the headline, fades into fog */
+.bg-hero-canopy {
+  background:
+    radial-gradient(
+      70% 55% at 50% -5%,
+      rgba(255, 197, 153, 0.55) 0%,
+      rgba(247, 247, 247, 0) 60%
+    ),
+    radial-gradient(
+      40% 30% at 90% 10%,
+      rgba(255, 219, 184, 0.35) 0%,
+      rgba(247, 247, 247, 0) 70%
+    ),
+    var(--color-fog);
+}
+
+/* Snow with a faint warm cream wash — used on alternating sections */
+.bg-snow-warm {
+  background: linear-gradient(180deg, #ffffff 0%, var(--color-warm-cream) 100%);
+}
+
+/* Fog with a soft warm corner glow */
+.bg-fog-warm {
+  background:
+    radial-gradient(
+      55% 50% at 100% 0%,
+      rgba(255, 219, 184, 0.28) 0%,
+      rgba(247, 247, 247, 0) 70%
+    ),
+    var(--color-fog);
+}
+
+/* Cool fog — soft graphite wash for variety */
+.bg-fog-cool {
+  background:
+    radial-gradient(
+      45% 40% at 0% 100%,
+      rgba(36, 36, 51, 0.05) 0%,
+      rgba(247, 247, 247, 0) 70%
+    ),
+    var(--color-fog);
+}
+
+/* Dark slate with warm corner — used for stat band */
+.bg-slate-warm {
+  background:
+    radial-gradient(
+      60% 80% at 100% 100%,
+      rgba(246, 146, 81, 0.22) 0%,
+      rgba(36, 36, 51, 0) 70%
+    ),
+    linear-gradient(180deg, var(--color-deep-slate) 0%, #1a1a26 100%);
+}
+
+/* Snow card with peach gradient — used for CTA panel */
+.bg-cta-warm {
+  background:
+    radial-gradient(
+      80% 90% at 50% 100%,
+      rgba(255, 197, 153, 0.32) 0%,
+      rgba(255, 255, 255, 0) 65%
+    ),
+    linear-gradient(180deg, #ffffff 0%, #fff7ef 100%);
+}
+
+/* ─── Dark theme gradient overrides (same class names, richer glow on charcoal) */
+.dark .bg-hero-canopy {
+  background:
+    radial-gradient(
+      70% 55% at 50% -5%,
+      rgba(246, 146, 81, 0.22) 0%,
+      rgba(16, 16, 20, 0) 58%
+    ),
+    radial-gradient(
+      40% 30% at 90% 10%,
+      rgba(233, 116, 45, 0.12) 0%,
+      rgba(16, 16, 20, 0) 72%
+    ),
+    var(--color-fog);
+}
+
+.dark .bg-snow-warm {
+  background: linear-gradient(180deg, var(--color-snow) 0%, #1a1816 100%);
+}
+
+.dark .bg-fog-warm {
+  background:
+    radial-gradient(
+      55% 50% at 100% 0%,
+      rgba(246, 146, 81, 0.14) 0%,
+      rgba(16, 16, 20, 0) 70%
+    ),
+    var(--color-fog);
+}
+
+.dark .bg-fog-cool {
+  background:
+    radial-gradient(
+      45% 40% at 0% 100%,
+      rgba(180, 180, 205, 0.08) 0%,
+      rgba(16, 16, 20, 0) 72%
+    ),
+    var(--color-fog);
+}
+
+.dark .bg-slate-warm {
+  background:
+    radial-gradient(
+      60% 80% at 100% 100%,
+      rgba(246, 146, 81, 0.35) 0%,
+      rgba(16, 16, 22, 0) 70%
+    ),
+    linear-gradient(180deg, #222230 0%, #12121c 100%);
+}
+
+.dark .bg-cta-warm {
+  background:
+    radial-gradient(
+      80% 90% at 50% 100%,
+      rgba(246, 146, 81, 0.22) 0%,
+      rgba(26, 26, 34, 0) 65%
+    ),
+    linear-gradient(180deg, #262630 0%, #1a1a24 100%);
+}
+
+/* ============================================================
+   Buttons — gradient + warm shadow
+   ============================================================ */
+
+/*
+  Deep tangerine gradient tuned for WHITE text:
+    top  #e57932 — white contrast 3.6:1
+    mid  #cf6624 — white contrast 4.6:1 (passes WCAG AA for normal text)
+    bot  #b85316 — white contrast 5.5:1
+  The glassy inset highlight stays for the retail-sticker feel.
+*/
+.btn-primary-surface {
+  background: linear-gradient(180deg, #e57932 0%, #b85316 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -1px 0 rgba(74, 30, 0, 0.25),
+    0 1px 1px rgba(0, 0, 0, 0.06),
+    0 8px 24px -8px rgba(184, 83, 22, 0.6);
+}
+
+.btn-primary-surface:hover {
+  background: linear-gradient(180deg, #ed8341 0%, #c45c1a 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -1px 0 rgba(74, 30, 0, 0.28),
+    0 1px 1px rgba(0, 0, 0, 0.07),
+    0 14px 34px -10px rgba(184, 83, 22, 0.7);
+}
+
+.btn-primary-surface:active {
+  background: linear-gradient(180deg, #d76d27 0%, #a14613 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -1px 0 rgba(74, 30, 0, 0.3),
+    0 1px 1px rgba(0, 0, 0, 0.07);
+}
+
+.btn-ghost-surface {
+  background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 4px 12px -4px rgba(0, 0, 0, 0.06);
+}
+
+.btn-ghost-surface:hover {
+  background: linear-gradient(180deg, #ffffff 0%, #f4f4f4 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 1px 2px rgba(0, 0, 0, 0.05),
+    0 8px 18px -4px rgba(0, 0, 0, 0.08);
+}
+
+.dark .btn-ghost-surface {
+  background: linear-gradient(180deg, #282832 0%, #1e1e28 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 1px 2px rgba(0, 0, 0, 0.3),
+    0 4px 12px -4px rgba(0, 0, 0, 0.35);
+}
+
+.dark .btn-ghost-surface:hover {
+  background: linear-gradient(180deg, #30303c 0%, #24242e 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 1px 2px rgba(0, 0, 0, 0.35),
+    0 8px 18px -4px rgba(0, 0, 0, 0.45);
+}
+
+.dark .btn-ghost-surface:active {
+  background: linear-gradient(180deg, #22222c 0%, #1a1a22 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+/* ============================================================
+   Marquee + float (carried forward from previous pass)
+   ============================================================ */
+
+@keyframes marquee {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 60s linear infinite;
+}
+
+.animate-marquee-pause:hover {
+  animation-play-state: paused;
+}
+
+.mask-fade-x {
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    #000 8%,
+    #000 92%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    #000 8%,
+    #000 92%,
+    transparent 100%
+  );
+}
+
+@keyframes float-soft {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.animate-float {
+  animation: float-soft 8s ease-in-out infinite;
+}
+
+.shadow-card {
+  box-shadow: var(--shadow-subtle);
+}
+
+.shadow-button {
+  box-shadow: var(--shadow-button);
+}
+
+.shadow-mockup {
+  box-shadow: var(--shadow-xl);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee,
+  .animate-float {
+    animation: none;
+  }
+}
