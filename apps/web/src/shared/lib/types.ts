@@ -3,6 +3,7 @@
 // build output — this is the contract between the two services.
 
 export const UserRole = {
+  SUPER_ADMIN: 'SUPER_ADMIN',
   ADMIN: 'ADMIN',
   FINANCE: 'FINANCE',
   DEPARTMENT_LEADER: 'DEPARTMENT_LEADER',
@@ -24,6 +25,7 @@ export interface User {
   role: UserRole;
   status: UserStatus;
   mustChangePassword: boolean;
+  churchId: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -32,7 +34,10 @@ export interface User {
 export interface LoginResponse {
   accessToken: string;
   mustChangePassword: boolean;
-  user: Pick<User, 'id' | 'email' | 'firstName' | 'lastName' | 'role'>;
+  user: Pick<
+    User,
+    'id' | 'email' | 'firstName' | 'lastName' | 'role' | 'churchId'
+  >;
 }
 
 /** Shape produced by the API's HttpExceptionFilter. */

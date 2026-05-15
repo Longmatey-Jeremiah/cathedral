@@ -1,7 +1,114 @@
 @import 'tailwindcss';
+@import 'tw-animate-css';
 
 /* Class-based dark (next-themes sets `.dark` on <html>) */
 @custom-variant dark (&:where(.dark, .dark *));
+
+/* ============================================================
+   shadcn token bridge — maps shadcn's semantic CSS variables
+   onto the existing Cathedral palette so shadcn components
+   inherit the brand without theming forks.
+   ============================================================ */
+
+:root {
+  --radius: 0.5rem;
+
+  --background: #f7f7f7; /* page-canvas */
+  --foreground: #000000; /* carbon */
+  --card: #ffffff; /* snow */
+  --card-foreground: #000000;
+  --popover: #ffffff;
+  --popover-foreground: #000000;
+  --primary: #b85316; /* tangerine deep */
+  --primary-foreground: #ffffff;
+  --secondary: #f7f7f7; /* fog */
+  --secondary-foreground: #000000;
+  --muted: #f7f7f7;
+  --muted-foreground: #636363; /* stone */
+  --accent: #f7f7f7;
+  --accent-foreground: #000000;
+  --destructive: #c97b84; /* dusty-rose */
+  --destructive-foreground: #ffffff;
+  --border: rgba(0, 0, 0, 0.06);
+  --input: rgba(0, 0, 0, 0.08);
+  --ring: #000000;
+
+  --sidebar: #ffffff;
+  --sidebar-foreground: #000000;
+  --sidebar-primary: #b85316;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f7f7f7;
+  --sidebar-accent-foreground: #000000;
+  --sidebar-border: rgba(0, 0, 0, 0.05);
+  --sidebar-ring: #000000;
+}
+
+html.dark {
+  --background: #101014;
+  --foreground: #f4f4f5;
+  --card: #1e1e28;
+  --card-foreground: #f4f4f5;
+  --popover: #1e1e28;
+  --popover-foreground: #f4f4f5;
+  --primary: #cf6624;
+  --primary-foreground: #ffffff;
+  --secondary: #16161e;
+  --secondary-foreground: #f4f4f5;
+  --muted: #16161e;
+  --muted-foreground: #c4c4d0;
+  --accent: rgba(255, 255, 255, 0.04);
+  --accent-foreground: #f4f4f5;
+  --destructive: #c97b84;
+  --destructive-foreground: #ffffff;
+  --border: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.1);
+  --ring: #f4f4f5;
+
+  --sidebar: #1e1e28;
+  --sidebar-foreground: #f4f4f5;
+  --sidebar-primary: #cf6624;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: rgba(255, 255, 255, 0.04);
+  --sidebar-accent-foreground: #f4f4f5;
+  --sidebar-border: rgba(255, 255, 255, 0.06);
+  --sidebar-ring: #f4f4f5;
+}
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
 
 @theme {
   /* Colors */
