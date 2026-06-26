@@ -34,6 +34,19 @@ class EnvironmentVariables {
   @IsOptional()
   JWT_EXPIRES_IN: string = '1h';
 
+  @IsString()
+  @IsOptional()
+  JWT_ACCESS_EXPIRES_IN: string = '15m';
+
+  @IsString()
+  @IsOptional()
+  JWT_REFRESH_EXPIRES_IN: string = '2d';
+
+  @IsString()
+  @MinLength(16, { message: 'JWT_REFRESH_SECRET must be at least 16 characters' })
+  @IsOptional()
+  JWT_REFRESH_SECRET?: string;
+
   @IsInt()
   @IsOptional()
   INVITE_TOKEN_TTL_HOURS: number = 72;
