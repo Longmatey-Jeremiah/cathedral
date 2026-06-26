@@ -1,19 +1,14 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, Instrument_Serif, Space_Grotesk } from 'next/font/google';
+import { Be_Vietnam_Pro, Instrument_Serif } from 'next/font/google';
 import { Providers } from './providers';
 import './globals.css';
 
-const inter = Inter({
+const sans = Be_Vietnam_Pro({
   subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  style: ['normal', 'italic'],
   display: 'swap',
-  variable: '--font-inter-loaded',
-});
-
-const display = Space_Grotesk({
-  subsets: ['latin'],
-  weight: ['400', '500', '700'],
-  display: 'swap',
-  variable: '--font-display-loaded',
+  variable: '--font-sans-loaded',
 });
 
 const serif = Instrument_Serif({
@@ -54,7 +49,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${display.variable} ${serif.variable}`}
+      className={`${sans.variable} ${serif.variable}`}
       suppressHydrationWarning
     >
       <body>

@@ -6,11 +6,11 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FiAtSign } from 'react-icons/fi';
 import { z } from 'zod';
-import { Emph } from '@/shared/components/Emph';
-import { BackLink } from '@/shared/components/admin/BackLink';
-import { PageHeader } from '@/shared/components/admin/PageHeader';
-import { Alert } from '@/shared/components/ui/alert';
-import { Button } from '@/shared/components/ui/button';
+import { Emph } from '@/components/Emph';
+import { BackLink } from '@/components/admin/BackLink';
+import { PageHeader } from '@/components/admin/PageHeader';
+import { Alert } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -19,15 +19,15 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/shared/components/ui/form';
-import { InputGroup } from '@/shared/components/ui/input';
+} from '@/components/ui/form';
+import { InputGroup } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/shared/components/ui/select';
+} from '@/components/ui/select';
 import { fadeUp, stagger } from '@/shared/lib/motion';
 import { UserRole } from '@/shared/lib/types';
 

@@ -2,18 +2,18 @@
 
 import { motion } from 'framer-motion';
 import { FiDownload } from 'react-icons/fi';
-import { ContributionsTable } from '@/features/giving/components/ContributionsTable';
+import { ContributionsTable } from '@/components/giving/ContributionsTable';
 import {
   contributions,
   formatMoney,
   funds,
-} from '@/features/giving/mock-data';
-import { Emph } from '@/shared/components/Emph';
-import { KpiCard } from '@/shared/components/admin/KpiCard';
-import { PageHeader } from '@/shared/components/admin/PageHeader';
-import { PanelCard } from '@/shared/components/admin/PanelCard';
-import { ProgressBar } from '@/shared/components/admin/ProgressBar';
-import { Button } from '@/shared/components/ui/button';
+} from '@/mocks/giving';
+import { Emph } from '@/components/Emph';
+import { KpiCard } from '@/components/admin/KpiCard';
+import { PageHeader } from '@/components/admin/PageHeader';
+import { PanelCard } from '@/components/admin/PanelCard';
+import { ProgressBar } from '@/components/admin/ProgressBar';
+import { Button } from '@/components/ui/button';
 import { fadeUp, stagger } from '@/shared/lib/motion';
 
 export default function GivingPage() {

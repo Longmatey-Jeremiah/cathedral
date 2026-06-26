@@ -1,11 +1,11 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { auditLog, timeAgo } from '@/features/audit/mock-data';
-import { Emph } from '@/shared/components/Emph';
-import { Avatar } from '@/shared/components/admin/Avatar';
-import { DataTable, type Column } from '@/shared/components/admin/DataTable';
-import { PageHeader } from '@/shared/components/admin/PageHeader';
+import { auditLog, timeAgo } from '@/mocks/audit';
+import { Emph } from '@/components/Emph';
+import { Avatar } from '@/components/admin/Avatar';
+import { DataTable, type Column } from '@/components/admin/DataTable';
+import { PageHeader } from '@/components/admin/PageHeader';
 import { stagger } from '@/shared/lib/motion';
 
 type Entry = (typeof auditLog)[number];

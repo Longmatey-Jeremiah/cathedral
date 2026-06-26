@@ -2,20 +2,20 @@
 
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { useAuth } from '@/features/auth/auth-context';
-import { ActivityList } from '@/features/dashboard/components/ActivityList';
-import { AttendancePanel } from '@/features/dashboard/components/AttendancePanel';
-import { ChurchesPanel } from '@/features/dashboard/components/ChurchesPanel';
-import { GivingPanel } from '@/features/dashboard/components/GivingPanel';
-import { KpiCard } from '@/features/dashboard/components/KpiCard';
-import { PanelCard } from '@/features/dashboard/components/PanelCard';
-import { QuickActions } from '@/features/dashboard/components/QuickActions';
+import { useAuth } from '@/hooks/auth-context';
+import { ActivityList } from '@/components/dashboard/ActivityList';
+import { AttendancePanel } from '@/components/dashboard/AttendancePanel';
+import { ChurchesPanel } from '@/components/dashboard/ChurchesPanel';
+import { GivingPanel } from '@/components/dashboard/GivingPanel';
+import { KpiCard } from '@/components/dashboard/KpiCard';
+import { PanelCard } from '@/components/dashboard/PanelCard';
+import { QuickActions } from '@/components/dashboard/QuickActions';
 import {
   churchContext,
   overviewKpis,
   platformKpis,
-} from '@/features/dashboard/mock-data';
-import { Emph } from '@/shared/components/Emph';
+} from '@/mocks/dashboard';
+import { Emph } from '@/components/Emph';
 import { fadeUp, stagger } from '@/shared/lib/motion';
 import { UserRole } from '@/shared/lib/types';
 

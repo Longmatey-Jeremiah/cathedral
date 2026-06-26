@@ -1,16 +1,16 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ServicesTable } from '@/features/attendance/components/ServicesTable';
+import { ServicesTable } from '@/components/attendance/ServicesTable';
 import {
   attendanceTrend,
   services,
-} from '@/features/attendance/mock-data';
-import { Emph } from '@/shared/components/Emph';
-import { KpiCard } from '@/shared/components/admin/KpiCard';
-import { MiniBarChart } from '@/shared/components/admin/MiniBarChart';
-import { PageHeader } from '@/shared/components/admin/PageHeader';
-import { PanelCard } from '@/shared/components/admin/PanelCard';
+} from '@/mocks/attendance';
+import { Emph } from '@/components/Emph';
+import { KpiCard } from '@/components/admin/KpiCard';
+import { MiniBarChart } from '@/components/admin/MiniBarChart';
+import { PageHeader } from '@/components/admin/PageHeader';
+import { PanelCard } from '@/components/admin/PanelCard';
 import { fadeUp, stagger } from '@/shared/lib/motion';
 
 export default function AttendancePage() {
