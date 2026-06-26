@@ -1,5 +1,5 @@
 import { UserRole, UserStatus } from '@/shared/lib/types';
-import type { Member } from './types';
+import type { Member } from '@/types/members';
 
 export const members: Member[] = [
   {

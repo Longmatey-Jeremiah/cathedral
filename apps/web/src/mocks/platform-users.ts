@@ -1,5 +1,5 @@
 import { UserRole, UserStatus } from '@/shared/lib/types';
-import type { PlatformUser } from './types';
+import type { PlatformUser } from '@/types/platform-users';
 
 const day = 24 * 60 * 60 * 1000;
 

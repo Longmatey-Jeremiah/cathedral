@@ -1,5 +1,5 @@
 import { UserRole } from '@/shared/lib/types';
-import type { Invite } from './types';
+import type { Invite } from '@/types/invites';
 
 const day = 24 * 60 * 60 * 1000;
 

@@ -1,4 +1,4 @@
-import type { Contribution, Fund } from './types';
+import type { Contribution, Fund } from '@/types/giving';
 
 export const funds: Fund[] = [
   { label: 'Tithes', amount: 28410, share: 58 },
