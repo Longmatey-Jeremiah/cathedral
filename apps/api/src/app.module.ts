@@ -6,6 +6,7 @@ import { configValidationSchema } from './config/config.validation';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ChurchesModule } from './modules/churches/churches.module';
+import { DepartmentsModule } from './modules/departments/departments.module';
 import { UsersModule } from './modules/users/users.module';
 import { InvitesModule } from './modules/invites/invites.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
@@ -20,6 +21,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
     PrismaModule,
     AuthModule,
     ChurchesModule,
+    DepartmentsModule,
     UsersModule,
     InvitesModule,
     NotificationsModule,
