@@ -36,8 +36,8 @@ const groups = [
     links: [
       { label: 'Migration guide', href: '#' },
       { label: 'Pastoral playbooks', href: '#' },
-      { label: 'Privacy', href: '#' },
-      { label: 'Terms', href: '#' },
+      { label: 'Privacy', href: '/privacy' },
+      { label: 'Terms', href: '/terms' },
     ],
   },
 ];

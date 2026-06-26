@@ -1,8 +1,8 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { fadeUp } from '../../lib/motion';
-import { cn } from '../../lib/cn';
+import { fadeUp } from '@/shared/lib/motion';
+import { cn } from '@/shared/lib/cn';
 
 export type KpiTone = 'positive' | 'warn' | 'neutral';
 

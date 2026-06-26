@@ -3,8 +3,8 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
-import { fadeUp } from '../../lib/motion';
-import { cn } from '../../lib/cn';
+import { fadeUp } from '@/shared/lib/motion';
+import { cn } from '@/shared/lib/cn';
 
 interface Props {
   title: string;

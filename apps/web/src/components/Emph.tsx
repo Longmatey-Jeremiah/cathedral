@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { cn } from '../lib/cn';
+import { cn } from '@/shared/lib/cn';
 
 /**
  * Editorial italic-serif accent for one or two words inside a display heading.

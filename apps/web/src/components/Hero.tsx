@@ -7,7 +7,7 @@ import { BrowserMockup } from './BrowserMockup';
 import { Emph } from './Emph';
 import { Pill } from './Pill';
 import { StarRow } from './StarRow';
-import { fadeUp, stagger } from '../lib/motion';
+import { fadeUp, stagger } from '@/shared/lib/motion';
 
 export function Hero() {
   return (

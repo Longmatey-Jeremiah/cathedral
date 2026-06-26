@@ -4,8 +4,8 @@ import { motion } from 'framer-motion';
 import type { ReactNode } from 'react';
 import { Container } from './Container';
 import { Pill } from './Pill';
-import { cn } from '../lib/cn';
-import { easeCalm, fadeUp, inView, stagger } from '../lib/motion';
+import { cn } from '@/shared/lib/cn';
+import { easeCalm, fadeUp, inView, stagger } from '@/shared/lib/motion';
 
 interface Props {
   label: string;

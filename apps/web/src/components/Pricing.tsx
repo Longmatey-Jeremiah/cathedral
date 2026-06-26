@@ -6,8 +6,8 @@ import { LinkButton } from './Button';
 import { Container } from './Container';
 import { Emph } from './Emph';
 import { Pill } from './Pill';
-import { cn } from '../lib/cn';
-import { easeCalm, fadeUp, inView, stagger } from '../lib/motion';
+import { cn } from '@/shared/lib/cn';
+import { easeCalm, fadeUp, inView, stagger } from '@/shared/lib/motion';
 
 interface Tier {
   id: string;

@@ -1,5 +1,5 @@
 import { Skeleton as UiSkeleton } from '../ui/skeleton';
-import { cn } from '../../lib/cn';
+import { cn } from '@/shared/lib/cn';
 
 export const Skeleton = UiSkeleton;
 

@@ -2,8 +2,8 @@
 
 import { motion } from 'framer-motion';
 import type { ComponentType, ReactNode } from 'react';
-import { fadeUp } from '../../lib/motion';
-import { cn } from '../../lib/cn';
+import { fadeUp } from '@/shared/lib/motion';
+import { cn } from '@/shared/lib/cn';
 
 interface Props {
   /** A `react-icons` component shown inside the soft circle. */

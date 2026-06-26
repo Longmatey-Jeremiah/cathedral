@@ -1,5 +1,5 @@
 import { Avatar as UiAvatar, AvatarFallback } from '../ui/avatar';
-import { cn } from '../../lib/cn';
+import { cn } from '@/shared/lib/cn';
 
 type Tone = 'fog' | 'tangerine';
 type Size = 'sm' | 'md' | 'lg';

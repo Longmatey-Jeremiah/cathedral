@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { forwardRef, type ReactNode } from 'react';
 import { Button as UiButton, type ButtonProps as UiButtonProps } from './ui/button';
-import { cn } from '../lib/cn';
+import { cn } from '@/shared/lib/cn';
 
 /**
  * Legacy `Button` / `LinkButton` shim used by the marketing landing.

@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { Container } from './Container';
-import { fadeUp, inView, stagger } from '../lib/motion';
+import { fadeUp, inView, stagger } from '@/shared/lib/motion';
 
 const stats = [
   { value: '2.4M+', label: 'Members shepherded across deployed churches' },

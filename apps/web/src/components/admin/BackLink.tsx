@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { FiArrowLeft } from 'react-icons/fi';
-import { cn } from '../../lib/cn';
+import { cn } from '@/shared/lib/cn';
 
 interface Props {
   href: string;

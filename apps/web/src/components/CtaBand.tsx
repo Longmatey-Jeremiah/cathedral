@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { LinkButton } from './Button';
 import { Container } from './Container';
 import { Emph } from './Emph';
-import { fadeUp, inView, stagger } from '../lib/motion';
+import { fadeUp, inView, stagger } from '@/shared/lib/motion';
 
 export function CtaBand() {
   return (

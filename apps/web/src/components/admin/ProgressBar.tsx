@@ -1,4 +1,4 @@
-import { cn } from '../../lib/cn';
+import { cn } from '@/shared/lib/cn';
 
 interface Props {
   /** 0 - 100. Values outside the range are clamped. */

@@ -3,8 +3,8 @@
 import { motion } from 'framer-motion';
 import type { ReactNode } from 'react';
 import { FiSearch } from 'react-icons/fi';
-import { fadeUp } from '../../lib/motion';
-import { cn } from '../../lib/cn';
+import { fadeUp } from '@/shared/lib/motion';
+import { cn } from '@/shared/lib/cn';
 
 interface Props {
   query: string;

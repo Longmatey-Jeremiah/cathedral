@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, type ReactNode } from 'react';
-import { cn } from '../../lib/cn';
+import { cn } from '@/shared/lib/cn';
 
 interface Props {
   /** What renders in the resting state (typically an icon button). */

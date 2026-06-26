@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import { FiMoon, FiSun } from 'react-icons/fi';
-import { cn } from '../lib/cn';
+import { cn } from '@/shared/lib/cn';
 
 export function ThemeToggle({ className }: { className?: string }) {
   const { resolvedTheme, setTheme } = useTheme();

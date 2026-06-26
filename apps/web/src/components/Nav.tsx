@@ -8,8 +8,8 @@ import { LinkButton } from './Button';
 import { Container } from './Container';
 import { Logo } from './Logo';
 import { ThemeToggle } from './ThemeToggle';
-import { cn } from '../lib/cn';
-import { easeCalm } from '../lib/motion';
+import { cn } from '@/shared/lib/cn';
+import { easeCalm } from '@/shared/lib/motion';
 
 const MOBILE_MENU_ID = 'site-mobile-menu';
 
