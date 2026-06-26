@@ -32,3 +32,14 @@ export const changePasswordSchema = z
   });
 
 export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
+
+export const acceptInviteSchema = z.object({
+  firstName: z.string().min(1, 'First name is required').max(80),
+  lastName: z.string().min(1, 'Last name is required').max(80),
+  password: z
+    .string()
+    .min(8, 'Use at least 8 characters')
+    .max(128, 'Password is too long'),
+});
+
+export type AcceptInviteInput = z.infer<typeof acceptInviteSchema>;
