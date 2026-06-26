@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -rln \"Button\\\\|LinkButton\" shared/components/Hero.tsx shared/components/Pricing.tsx shared/components/CtaBand.tsx shared/components/Nav.tsx)",
+      "Bash(grep -rln \"from './Button'\\\\|import.*Button.*from '\\\\\\\\./Button'\" shared/components/)",
+      "Bash(mkdir -p /Users/user/Projects/project/apps/web/src/features/members/components /Users/user/Projects/project/apps/web/src/features/departments/components /Users/user/Projects/project/apps/web/src/features/attendance/components /Users/user/Projects/project/apps/web/src/features/giving/components /Users/user/Projects/project/apps/web/src/features/invites/components /Users/user/Projects/project/apps/web/src/features/settings/components /Users/user/Projects/project/apps/web/src/features/reports /Users/user/Projects/project/apps/web/src/features/audit /Users/user/Projects/project/apps/web/src/features/platform-users/components /Users/user/Projects/project/apps/web/src/app/dashboard/members/new /Users/user/Projects/project/apps/web/src/app/dashboard/departments/\\\\[id\\\\] /Users/user/Projects/project/apps/web/src/app/dashboard/attendance /Users/user/Projects/project/apps/web/src/app/dashboard/giving /Users/user/Projects/project/apps/web/src/app/dashboard/invites/new /Users/user/Projects/project/apps/web/src/app/dashboard/reports /Users/user/Projects/project/apps/web/src/app/dashboard/audit /Users/user/Projects/project/apps/web/src/app/dashboard/settings /Users/user/Projects/project/apps/web/src/app/dashboard/platform/users)"
+    ],
+    "additionalDirectories": [
+      "/Users/user/Projects/project/apps/web/src/app/dashboard/departments"
+    ]
+  }
+}
