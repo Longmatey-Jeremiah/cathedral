@@ -34,9 +34,9 @@ export class CreateChurchDto {
   @MaxLength(40)
   phone?: string;
 
-  @IsOptional()
   @IsEmail()
-  email?: string;
+  @IsNotEmpty()
+  email!: string;
 
   @IsOptional()
   @IsBoolean()
