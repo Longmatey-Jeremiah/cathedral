@@ -3,15 +3,15 @@
 import { motion } from 'framer-motion';
 import { useMemo, useState } from 'react';
 import { FiPlus } from 'react-icons/fi';
-import { ChurchTable } from '@/features/churches/components/ChurchTable';
-import { useChurches } from '@/features/churches/hooks';
-import { LinkButton } from '@/shared/components/Button';
-import { Emph } from '@/shared/components/Emph';
-import { EmptyState } from '@/shared/components/admin/EmptyState';
-import { FilterBar } from '@/shared/components/admin/FilterBar';
-import { PageHeader } from '@/shared/components/admin/PageHeader';
-import { TableSkeleton } from '@/shared/components/admin/Skeleton';
-import { Alert } from '@/shared/components/ui/alert';
+import { ChurchTable } from '@/components/churches/ChurchTable';
+import { useChurches } from '@/hooks/churches';
+import { LinkButton } from '@/components/Button';
+import { Emph } from '@/components/Emph';
+import { EmptyState } from '@/components/admin/EmptyState';
+import { FilterBar } from '@/components/admin/FilterBar';
+import { PageHeader } from '@/components/admin/PageHeader';
+import { TableSkeleton } from '@/components/admin/Skeleton';
+import { Alert } from '@/components/ui/alert';
 import { stagger } from '@/shared/lib/motion';
 
 export default function ChurchesPage() {

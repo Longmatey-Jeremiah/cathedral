@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { RequireAuth } from '@/features/auth/components/RequireAuth';
+import { RequireAuth } from '@/components/auth/RequireAuth';
 import { UserRole } from '@/shared/lib/types';
 
 /**

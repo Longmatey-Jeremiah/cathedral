@@ -2,12 +2,12 @@
 
 import { motion } from 'framer-motion';
 import { useMemo, useState } from 'react';
-import { PlatformUsersTable } from '@/features/platform-users/components/PlatformUsersTable';
-import { platformUsers } from '@/features/platform-users/mock-data';
-import { Emph } from '@/shared/components/Emph';
-import { FilterBar } from '@/shared/components/admin/FilterBar';
-import { KpiCard } from '@/shared/components/admin/KpiCard';
-import { PageHeader } from '@/shared/components/admin/PageHeader';
+import { PlatformUsersTable } from '@/components/platform-users/PlatformUsersTable';
+import { platformUsers } from '@/mocks/platform-users';
+import { Emph } from '@/components/Emph';
+import { FilterBar } from '@/components/admin/FilterBar';
+import { KpiCard } from '@/components/admin/KpiCard';
+import { PageHeader } from '@/components/admin/PageHeader';
 import { stagger } from '@/shared/lib/motion';
 
 export default function PlatformUsersPage() {
