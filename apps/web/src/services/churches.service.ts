@@ -1,6 +1,9 @@
-import { api } from '@/shared/lib/api';
-import type { CreateChurchInput, UpdateChurchInput } from './schemas';
-import type { Church } from './types';
+import type {
+  CreateChurchInput,
+  UpdateChurchInput,
+} from '@/shared/lib/rules/churches';
+import type { Church } from '@/types/churches';
+import { api } from '@/services/api';
 
 /**
  * Empty strings come from optional form fields — the API expects either a
@@ -16,7 +19,7 @@ function clean<T extends Record<string, unknown>>(input: T): Partial<T> {
   return out;
 }
 
-export const churchesApi = {
+export const churchesService = {
   list: () => api.get<Church[]>('/churches'),
   get: (id: string) => api.get<Church>(`/churches/${id}`),
   create: (input: CreateChurchInput) =>

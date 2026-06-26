@@ -1,5 +1,5 @@
-import type { ApiErrorPayload } from './types';
-import { tokenStorage } from './storage';
+import type { ApiErrorPayload } from '@/shared/lib/types';
+import { store } from '@/store';
 
 const BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000/api';
@@ -51,7 +51,7 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
     finalHeaders.set('Content-Type', 'application/json');
   }
   if (!anonymous) {
-    const token = tokenStorage.get();
+    const token = store.getState().auth.session?.accessToken;
     if (token) finalHeaders.set('Authorization', `Bearer ${token}`);
   }
 
@@ -62,7 +62,7 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
       headers: finalHeaders,
       body: body === undefined ? undefined : JSON.stringify(body),
     });
-  } catch (err) {
+  } catch {
     // Network error / CORS / DNS — surface as a uniform ApiError(0).
     throw new ApiError(0, null, 'Could not reach the server. Check your connection.');
   }
