@@ -2,10 +2,10 @@
 
 import { motion } from 'framer-motion';
 import { FiArrowRight, FiClock } from 'react-icons/fi';
-import { reports } from '@/features/reports/mock-data';
-import { Emph } from '@/shared/components/Emph';
-import { PageHeader } from '@/shared/components/admin/PageHeader';
-import { Button } from '@/shared/components/ui/button';
+import { reports } from '@/mocks/reports';
+import { Emph } from '@/components/Emph';
+import { PageHeader } from '@/components/admin/PageHeader';
+import { Button } from '@/components/ui/button';
 import { fadeUp, stagger } from '@/shared/lib/motion';
 import { cn } from '@/shared/lib/cn';
 

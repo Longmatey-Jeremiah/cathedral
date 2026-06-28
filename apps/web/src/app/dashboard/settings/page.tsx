@@ -1,17 +1,17 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useAuth } from '@/features/auth/auth-context';
-import { PreferencesCard } from '@/features/settings/components/PreferencesCard';
-import { ProfileForm } from '@/features/settings/components/ProfileForm';
-import { Emph } from '@/shared/components/Emph';
-import { PageHeader } from '@/shared/components/admin/PageHeader';
+import { useAuth } from '@/hooks/auth-context';
+import { PreferencesCard } from '@/components/settings/PreferencesCard';
+import { ProfileForm } from '@/components/settings/ProfileForm';
+import { Emph } from '@/components/Emph';
+import { PageHeader } from '@/components/admin/PageHeader';
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from '@/shared/components/ui/tabs';
+} from '@/components/ui/tabs';
 import { fadeUp, stagger } from '@/shared/lib/motion';
 
 export default function SettingsPage() {

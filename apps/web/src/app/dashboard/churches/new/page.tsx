@@ -2,11 +2,11 @@
 
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { ChurchForm } from '@/features/churches/components/ChurchForm';
-import { useCreateChurch } from '@/features/churches/hooks';
-import { Emph } from '@/shared/components/Emph';
-import { BackLink } from '@/shared/components/admin/BackLink';
-import { PageHeader } from '@/shared/components/admin/PageHeader';
+import { ChurchForm } from '@/components/churches/ChurchForm';
+import { useCreateChurch } from '@/hooks/churches';
+import { Emph } from '@/components/Emph';
+import { BackLink } from '@/components/admin/BackLink';
+import { PageHeader } from '@/components/admin/PageHeader';
 import { fadeUp, stagger } from '@/shared/lib/motion';
 
 export default function CreateChurchPage() {

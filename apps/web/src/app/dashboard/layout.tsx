@@ -1,10 +1,10 @@
 'use client';
 
-import type { ReactNode } from 'react';
-import { useAuth } from '@/features/auth/auth-context';
-import { RequireAuth } from '@/features/auth/components/RequireAuth';
-import { Sidebar } from '@/features/dashboard/components/Sidebar';
-import { Topbar } from '@/features/dashboard/components/Topbar';
+import { useState, type ReactNode } from 'react';
+import { useAuth } from '@/hooks/auth-context';
+import { RequireAuth } from '@/components/auth/RequireAuth';
+import { Sidebar } from '@/components/dashboard/Sidebar';
+import { Topbar } from '@/components/dashboard/Topbar';
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
@@ -16,6 +16,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
 function Shell({ children }: { children: ReactNode }) {
   const { user } = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false);
   // RequireAuth gates this — by the time Shell renders, `user` is non-null.
   if (!user) return null;
 
@@ -24,9 +25,20 @@ function Shell({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex min-h-screen bg-page-canvas">
-      <Sidebar role={user.role} userLabel={fullName} email={user.email} />
+      <Sidebar
+        role={user.role}
+        userLabel={fullName}
+        email={user.email}
+        open={menuOpen}
+        onClose={() => setMenuOpen(false)}
+      />
       <div className="flex min-w-0 flex-1 flex-col">
-        <Topbar name={fullName} email={user.email} role={user.role} />
+        <Topbar
+          name={fullName}
+          email={user.email}
+          role={user.role}
+          onMenuClick={() => setMenuOpen(true)}
+        />
         <main className="flex-1 px-6 pb-12 pt-8 lg:px-10">{children}</main>
       </div>
     </div>

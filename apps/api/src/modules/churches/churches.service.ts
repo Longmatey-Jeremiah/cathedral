@@ -1,25 +1,32 @@
 import {
   ConflictException,
   ForbiddenException,
+  Inject,
   Injectable,
   NotFoundException,
+  forwardRef,
 } from '@nestjs/common';
-import { Church } from '@prisma/client';
+import { Church, UserRole } from '@prisma/client';
 import { AuthenticatedUser, isSuperAdmin } from '../../common/types/authenticated-user';
+import { InvitesService } from '../invites/invites.service';
 import { ChurchesRepository } from './churches.repository';
 import { CreateChurchDto } from './dto/create-church.dto';
 import { UpdateChurchDto } from './dto/update-church.dto';
 
 @Injectable()
 export class ChurchesService {
-  constructor(private readonly churches: ChurchesRepository) {}
+  constructor(
+    private readonly churches: ChurchesRepository,
+    @Inject(forwardRef(() => InvitesService))
+    private readonly invites: InvitesService,
+  ) {}
 
-  async create(dto: CreateChurchDto): Promise<Church> {
+  async create(dto: CreateChurchDto, actor: AuthenticatedUser): Promise<Church & { inviteUrl: string }> {
     const existing = await this.churches.findBySlug(dto.slug);
     if (existing) {
       throw new ConflictException('Slug is already in use');
     }
-    return this.churches.create({
+    const church = await this.churches.create({
       name: dto.name,
       slug: dto.slug,
       address: dto.address,
@@ -27,6 +34,14 @@ export class ChurchesService {
       email: dto.email,
       isActive: dto.isActive ?? true,
     });
+
+    // Provision the church's first ADMIN and hand back the invite link.
+    const { inviteUrl } = await this.invites.invite(
+      { email: dto.email, role: UserRole.ADMIN, churchId: church.id },
+      actor,
+    );
+
+    return { ...church, inviteUrl };
   }
 
   findAll(): Promise<Church[]> {

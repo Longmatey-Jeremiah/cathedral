@@ -2,12 +2,12 @@
 
 import { motion } from 'framer-motion';
 import { FiMail } from 'react-icons/fi';
-import { InvitesTable } from '@/features/invites/components/InvitesTable';
-import { invites, inviteStatus } from '@/features/invites/mock-data';
-import { LinkButton } from '@/shared/components/Button';
-import { Emph } from '@/shared/components/Emph';
-import { KpiCard } from '@/shared/components/admin/KpiCard';
-import { PageHeader } from '@/shared/components/admin/PageHeader';
+import { InvitesTable } from '@/components/invites/InvitesTable';
+import { invites, inviteStatus } from '@/mocks/invites';
+import { LinkButton } from '@/components/Button';
+import { Emph } from '@/components/Emph';
+import { KpiCard } from '@/components/admin/KpiCard';
+import { PageHeader } from '@/components/admin/PageHeader';
 import { stagger } from '@/shared/lib/motion';
 
 export default function InvitesPage() {

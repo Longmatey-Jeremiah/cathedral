@@ -9,6 +9,7 @@ import { AcceptInviteDto } from '../invites/dto/accept-invite.dto';
 import { AuthService } from './auth.service';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { LoginDto } from './dto/login.dto';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -31,6 +32,13 @@ export class AuthController {
     @Body() dto: ChangePasswordDto,
   ) {
     return this.auth.changePassword(user, dto);
+  }
+
+  @Public()
+  @Post('refresh')
+  @Throttle({ default: { ttl: 60_000, limit: 10 } })
+  refresh(@Body() dto: RefreshTokenDto) {
+    return this.auth.refresh(dto.refreshToken);
   }
 
   @Public()

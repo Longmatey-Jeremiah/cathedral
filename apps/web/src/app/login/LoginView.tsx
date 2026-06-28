@@ -2,9 +2,9 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { LoginForm } from '@/features/auth/components/LoginForm';
-import { Emph } from '@/shared/components/Emph';
-import { Logo } from '@/shared/components/Logo';
+import { LoginForm } from '@/components/auth/LoginForm';
+import { Emph } from '@/components/Emph';
+import { Logo } from '@/components/Logo';
 import { easeCalm, fadeUp, stagger } from '@/shared/lib/motion';
 
 export function LoginView() {

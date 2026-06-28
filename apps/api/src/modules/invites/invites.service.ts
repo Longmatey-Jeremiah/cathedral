@@ -66,7 +66,9 @@ export class InvitesService {
       expiresAt,
     });
 
-    return { email: dto.email, expiresAt };
+    // Returned so callers can surface/copy the link directly — useful while
+    // email delivery is still a log-only stub (notifications.service send()).
+    return { email: dto.email, expiresAt, inviteUrl };
   }
 
   async validate(token: string) {

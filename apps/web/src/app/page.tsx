@@ -1,17 +1,17 @@
-import { CtaBand } from '@/shared/components/CtaBand';
-import { Emph } from '@/shared/components/Emph';
-import { Faq } from '@/shared/components/Faq';
-import { FeatureRow } from '@/shared/components/FeatureRow';
-import { Footer } from '@/shared/components/Footer';
-import { Hero } from '@/shared/components/Hero';
-import { LogosStrip } from '@/shared/components/LogosStrip';
-import { Nav } from '@/shared/components/Nav';
-import { Pricing } from '@/shared/components/Pricing';
-import { StatBand } from '@/shared/components/StatBand';
-import { Testimonials } from '@/shared/components/Testimonials';
-import { AttendanceCard } from '@/shared/components/visuals/AttendanceCard';
-import { GivingCard } from '@/shared/components/visuals/GivingCard';
-import { InviteFlowCard } from '@/shared/components/visuals/InviteFlowCard';
+import { CtaBand } from '@/components/CtaBand';
+import { Emph } from '@/components/Emph';
+import { Faq } from '@/components/Faq';
+import { FeatureRow } from '@/components/FeatureRow';
+import { Footer } from '@/components/Footer';
+import { Hero } from '@/components/Hero';
+import { LogosStrip } from '@/components/LogosStrip';
+import { Nav } from '@/components/Nav';
+import { Pricing } from '@/components/Pricing';
+import { StatBand } from '@/components/StatBand';
+import { Testimonials } from '@/components/Testimonials';
+import { AttendanceCard } from '@/components/visuals/AttendanceCard';
+import { GivingCard } from '@/components/visuals/GivingCard';
+import { InviteFlowCard } from '@/components/visuals/InviteFlowCard';
 
 /*
   Section rhythm: even indices are gradient (warm/cool radials), odd

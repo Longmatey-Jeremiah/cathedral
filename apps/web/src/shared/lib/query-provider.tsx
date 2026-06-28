@@ -2,7 +2,7 @@
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState, type ReactNode } from 'react';
-import { ApiError } from './api';
+import { ApiError } from '@/services/api';
 
 export function QueryProvider({ children }: { children: ReactNode }) {
   const [client] = useState(

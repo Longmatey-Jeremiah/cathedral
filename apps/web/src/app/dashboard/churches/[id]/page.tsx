@@ -2,19 +2,19 @@
 
 import { motion } from 'framer-motion';
 import { useParams, useRouter } from 'next/navigation';
-import { ChurchForm } from '@/features/churches/components/ChurchForm';
-import { ChurchStatusBadge } from '@/features/churches/components/ChurchStatusBadge';
+import { ChurchForm } from '@/components/churches/ChurchForm';
+import { ChurchStatusBadge } from '@/components/churches/ChurchStatusBadge';
 import {
   useChurch,
   useDeleteChurch,
   useUpdateChurch,
-} from '@/features/churches/hooks';
-import { Emph } from '@/shared/components/Emph';
-import { BackLink } from '@/shared/components/admin/BackLink';
-import { DangerZone } from '@/shared/components/admin/DangerZone';
-import { PageHeader } from '@/shared/components/admin/PageHeader';
-import { FormSkeleton } from '@/shared/components/admin/Skeleton';
-import { Alert } from '@/shared/components/ui/alert';
+} from '@/hooks/churches';
+import { Emph } from '@/components/Emph';
+import { BackLink } from '@/components/admin/BackLink';
+import { DangerZone } from '@/components/admin/DangerZone';
+import { PageHeader } from '@/components/admin/PageHeader';
+import { FormSkeleton } from '@/components/admin/Skeleton';
+import { Alert } from '@/components/ui/alert';
 import { fadeUp, stagger } from '@/shared/lib/motion';
 
 export default function ChurchDetailPage() {

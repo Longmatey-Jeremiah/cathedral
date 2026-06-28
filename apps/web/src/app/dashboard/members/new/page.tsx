@@ -4,13 +4,18 @@ import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FiAtSign, FiUser } from 'react-icons/fi';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Emph } from '@/shared/components/Emph';
-import { BackLink } from '@/shared/components/admin/BackLink';
-import { PageHeader } from '@/shared/components/admin/PageHeader';
-import { Alert } from '@/shared/components/ui/alert';
-import { Button } from '@/shared/components/ui/button';
+import { useCreateMember } from '@/hooks/members';
+import { ApiError } from '@/services/api';
+import {
+  createMemberSchema,
+  type CreateMemberFormInput,
+} from '@/shared/lib/rules/members';
+import { Emph } from '@/components/Emph';
+import { BackLink } from '@/components/admin/BackLink';
+import { PageHeader } from '@/components/admin/PageHeader';
+import { Alert } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -18,25 +23,17 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/shared/components/ui/form';
-import { InputGroup } from '@/shared/components/ui/input';
+} from '@/components/ui/form';
+import { InputGroup } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/shared/components/ui/select';
+} from '@/components/ui/select';
 import { fadeUp, stagger } from '@/shared/lib/motion';
 import { UserRole } from '@/shared/lib/types';
-
-const schema = z.object({
-  firstName: z.string().min(1, 'First name is required').max(80),
-  lastName: z.string().min(1, 'Last name is required').max(80),
-  email: z.string().email('Enter a valid email'),
-  role: z.enum(['ADMIN', 'FINANCE', 'DEPARTMENT_LEADER', 'VIEWER']),
-});
-type Values = z.infer<typeof schema>;
 
 const inlineInput =
   'h-11 flex-1 border-0 bg-transparent p-0 text-[15px] text-foreground placeholder:text-muted-foreground/80 focus:outline-none focus:ring-0';
@@ -44,8 +41,8 @@ const inlineInput =
 export default function NewMemberPage() {
   const [created, setCreated] = useState(false);
 
-  const form = useForm<Values>({
-    resolver: zodResolver(schema),
+  const form = useForm<CreateMemberFormInput>({
+    resolver: zodResolver(createMemberSchema),
     defaultValues: {
       firstName: '',
       lastName: '',
@@ -54,10 +51,19 @@ export default function NewMemberPage() {
     },
   });
 
-  const onSubmit = form.handleSubmit(() => {
-    // TODO(api): POST /users — generates a temp password + emails it.
-    setCreated(true);
+  // POST /users — generates a temp password + emails it.
+  const create = useCreateMember({
+    onSuccess: () => {
+      setCreated(true);
+      form.reset();
+    },
   });
+
+  const onSubmit = form.handleSubmit((values) => {
+    create.mutate(values);
+  });
+
+  const formError = formErrorMessage(create.error);
 
   return (
     <motion.div
@@ -86,6 +92,12 @@ export default function NewMemberPage() {
           <Alert tone="success">
             Account created. A temporary password has been emailed.
           </Alert>
+        </motion.div>
+      ) : null}
+
+      {formError ? (
+        <motion.div variants={fadeUp} className="mt-6">
+          <Alert>{formError}</Alert>
         </motion.div>
       ) : null}
 
@@ -194,11 +206,25 @@ export default function NewMemberPage() {
             />
 
             <div className="flex justify-end pt-2">
-              <Button type="submit">Add member</Button>
+              <Button type="submit" disabled={create.isPending}>
+                {create.isPending ? 'Adding…' : 'Add member'}
+              </Button>
             </div>
           </form>
         </Form>
       </motion.section>
     </motion.div>
   );
+}
+
+function formErrorMessage(error: unknown): string | null {
+  if (!error) return null;
+  if (error instanceof ApiError) {
+    if (error.status === 0) {
+      return 'Could not reach the server. Please try again in a moment.';
+    }
+    if (error.isValidation) return null;
+    return error.message;
+  }
+  return 'Something went wrong. Please try again.';
 }

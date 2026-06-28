@@ -33,6 +33,7 @@ export interface User {
 /** What `/auth/login` returns. */
 export interface LoginResponse {
   accessToken: string;
+  refreshToken: string;
   mustChangePassword: boolean;
   user: Pick<
     User,

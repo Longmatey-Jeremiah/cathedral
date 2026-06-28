@@ -26,8 +26,11 @@ export class ChurchesController {
 
   @Post()
   @Roles(UserRole.SUPER_ADMIN)
-  create(@Body() dto: CreateChurchDto) {
-    return this.churches.create(dto);
+  create(
+    @Body() dto: CreateChurchDto,
+    @CurrentUser() actor: AuthenticatedUser,
+  ) {
+    return this.churches.create(dto, actor);
   }
 
   @Get()
