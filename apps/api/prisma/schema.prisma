@@ -20,6 +20,17 @@ enum UserRole {
   VIEWER
 }
 
+enum MemberStatus {
+  ACTIVE
+  INACTIVE
+  VISITOR
+}
+
+enum DepartmentRole {
+  MEMBER
+  LEADER
+}
+
 model Church {
   id        String   @id @default(uuid())
   name      String
@@ -34,6 +45,7 @@ model Church {
   users       User[]
   invites     UserInvite[]
   departments Department[]
+  members     Member[]
 
   @@index([slug])
 }
@@ -46,6 +58,8 @@ model Department {
   church      Church   @relation(fields: [churchId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  members MemberDepartment[]
 
   @@unique([churchId, name])
   @@index([churchId])
@@ -62,6 +76,7 @@ model User {
   mustChangePassword Boolean    @default(false)
   churchId           String?
   church             Church?    @relation(fields: [churchId], references: [id], onDelete: Cascade)
+  member             Member?
   createdAt          DateTime   @default(now())
   updatedAt          DateTime   @updatedAt
 
@@ -83,4 +98,42 @@ model UserInvite {
   @@index([email])
   @@index([tokenHash])
   @@index([churchId])
+}
+
+// Church/domain entity — distinct from User (auth). A member MAY link to a
+// user account (userId) but visitors/guests have none.
+model Member {
+  id        String       @id @default(uuid())
+  userId    String?      @unique
+  user      User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+  churchId  String
+  church    Church       @relation(fields: [churchId], references: [id], onDelete: Cascade)
+  firstName String
+  lastName  String
+  phone     String?
+  avatarUrl String?
+  status    MemberStatus @default(VISITOR)
+  joinDate  DateTime     @default(now())
+  deletedAt DateTime? // soft delete preserves historical records
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  departments MemberDepartment[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([churchId, status]) // tenant + status filter, the common list query
+}
+
+// Many-to-many join: a member belongs to multiple departments, each with a role.
+model MemberDepartment {
+  memberId     String
+  departmentId String
+  role         DepartmentRole @default(MEMBER)
+  member       Member         @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  department   Department     @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+
+  @@id([memberId, departmentId]) // composite primary key
+  @@index([memberId])
+  @@index([departmentId])
 }
