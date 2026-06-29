@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FiUserPlus } from 'react-icons/fi';
 import { MembersTable } from '@/components/members/MembersTable';
 import { useMembers } from '@/hooks/members';
@@ -14,20 +14,28 @@ import { TableSkeleton } from '@/components/admin/Skeleton';
 import { Alert } from '@/components/ui/alert';
 import { stagger } from '@/shared/lib/motion';
 
-export default function MembersPage() {
-  const { data, isLoading, error } = useMembers();
-  const [query, setQuery] = useState('');
+const PAGE_SIZE = 25;
 
-  const filtered = useMemo(() => {
-    if (!data) return [];
-    const needle = query.trim().toLowerCase();
-    if (!needle) return data;
-    return data.filter((m) =>
-      `${m.firstName} ${m.lastName} ${m.email} ${m.department ?? ''}`
-        .toLowerCase()
-        .includes(needle),
-    );
-  }, [data, query]);
+export default function MembersPage() {
+  const [input, setInput] = useState('');
+  const [q, setQ] = useState('');
+  const [page, setPage] = useState(1);
+
+  // Debounce the search box so each keystroke doesn't fire a request, and
+  // reset to the first page whenever the term changes.
+  useEffect(() => {
+    const id = setTimeout(() => {
+      setQ(input.trim());
+      setPage(1);
+    }, 300);
+    return () => clearTimeout(id);
+  }, [input]);
+
+  const { data, isLoading, error } = useMembers({ page, pageSize: PAGE_SIZE, q });
+
+  const total = data?.total ?? 0;
+  const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const members = data?.data ?? [];
 
   return (
     <motion.div
@@ -37,7 +45,7 @@ export default function MembersPage() {
       className="mx-auto w-full max-w-[1200px]"
     >
       <PageHeader
-        eyebrow={data ? `${data.length} people` : 'People'}
+        eyebrow={data ? `${total} people` : 'People'}
         title={
           <>
             <Emph>Members</Emph>
@@ -54,9 +62,9 @@ export default function MembersPage() {
 
       <div className="mt-8">
         <FilterBar
-          query={query}
-          onQueryChange={setQuery}
-          placeholder="Search by name, email, or department"
+          query={input}
+          onQueryChange={setInput}
+          placeholder="Search by name or phone"
         />
       </div>
 
@@ -69,33 +77,62 @@ export default function MembersPage() {
           </Alert>
         ) : isLoading ? (
           <TableSkeleton />
-        ) : !data || data.length === 0 ? (
-          <EmptyState
-            icon={FiUserPlus}
-            title="No members yet"
-            description="Add the first person to your church. They will receive a one-time password to sign in and set their own."
-            action={
-              <LinkButton href="/dashboard/members/new" size="md">
-                <FiUserPlus size={16} aria-hidden />
-                Add a member
-              </LinkButton>
-            }
-          />
-        ) : filtered.length === 0 ? (
-          <EmptyState
-            title={`No member matches "${query}"`}
-            action={
-              <button
-                type="button"
-                onClick={() => setQuery('')}
-                className="text-[12px] text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
-              >
-                Clear search
-              </button>
-            }
-          />
+        ) : members.length === 0 ? (
+          q ? (
+            <EmptyState
+              title={`No member matches "${q}"`}
+              action={
+                <button
+                  type="button"
+                  onClick={() => setInput('')}
+                  className="text-[12px] text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+                >
+                  Clear search
+                </button>
+              }
+            />
+          ) : (
+            <EmptyState
+              icon={FiUserPlus}
+              title="No members yet"
+              description="Add the first person to your church. They will receive a one-time password to sign in and set their own."
+              action={
+                <LinkButton href="/dashboard/members/new" size="md">
+                  <FiUserPlus size={16} aria-hidden />
+                  Add a member
+                </LinkButton>
+              }
+            />
+          )
         ) : (
-          <MembersTable members={filtered} />
+          <>
+            <MembersTable members={members} />
+            {pageCount > 1 ? (
+              <div className="mt-4 flex items-center justify-between text-[12px] text-muted-foreground">
+                <span>
+                  Page {page} of {pageCount}
+                </span>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    disabled={page <= 1}
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    className="rounded-full px-3 py-1 hover:bg-muted disabled:opacity-40"
+                  >
+                    Previous
+                  </button>
+                  <button
+                    type="button"
+                    disabled={page >= pageCount}
+                    onClick={() => setPage((p) => Math.min(pageCount, p + 1))}
+                    className="rounded-full px-3 py-1 hover:bg-muted disabled:opacity-40"
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            ) : null}
+          </>
         )}
       </div>
     </motion.div>
