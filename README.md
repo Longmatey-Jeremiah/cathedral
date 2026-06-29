@@ -36,7 +36,8 @@ npm run prisma:migrate  -w @cmp/api
 npm run dev
 ```
 
-Web at http://localhost:3000 · API at http://localhost:4000/api.
+Web at http://localhost:3000 · API at http://localhost:4000/api · Swagger
+docs at http://localhost:4000/api/docs.
 
 ## Architecture
 
