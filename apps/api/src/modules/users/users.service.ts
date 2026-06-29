@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   ConflictException,
   ForbiddenException,
   Injectable,
@@ -14,8 +13,12 @@ import {
   AuthenticatedUser,
   isSuperAdmin,
 } from '../../common/types/authenticated-user';
-import { ChurchesRepository } from '../churches/churches.repository';
+import { ChurchScopeService } from '../churches/church-scope.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import {
+  Paginated,
+  PaginationQueryDto,
+} from '../../common/dto/pagination.query.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersRepository } from './users.repository';
@@ -26,7 +29,7 @@ export type PublicUser = Omit<User, 'password'>;
 export class UsersService {
   constructor(
     private readonly users: UsersRepository,
-    private readonly churches: ChurchesRepository,
+    private readonly churchScope: ChurchScopeService,
     private readonly notifications: NotificationsService,
   ) {}
 
@@ -38,7 +41,7 @@ export class UsersService {
       throw new ForbiddenException('Only a super admin can create super admins');
     }
 
-    const targetChurchId = await this.resolveTargetChurch(actor, dto.role, dto.churchId);
+    const targetChurchId = await this.churchScope.resolveTargetChurch(actor, dto.role, dto.churchId);
 
     const existing = await this.users.findByEmail(dto.email);
     if (existing) {
@@ -70,12 +73,40 @@ export class UsersService {
     return this.toPublic(user);
   }
 
-  async findAll(actor: AuthenticatedUser): Promise<PublicUser[]> {
-    const where: Prisma.UserWhereInput = isSuperAdmin(actor)
+  async findAll(
+    actor: AuthenticatedUser,
+    query: PaginationQueryDto,
+  ): Promise<Paginated<PublicUser>> {
+    const tenant: Prisma.UserWhereInput = isSuperAdmin(actor)
       ? {}
       : { churchId: actor.churchId };
-    const users = await this.users.findAll(where);
-    return users.map((u) => this.toPublic(u));
+
+    // Search is pushed to Postgres (indexed email) instead of shipping every
+    // row to the client to filter in JS.
+    const search: Prisma.UserWhereInput = query.q
+      ? {
+          OR: [
+            { email: { contains: query.q, mode: 'insensitive' } },
+            { firstName: { contains: query.q, mode: 'insensitive' } },
+            { lastName: { contains: query.q, mode: 'insensitive' } },
+          ],
+        }
+      : {};
+
+    const where: Prisma.UserWhereInput = { AND: [tenant, search] };
+    const skip = (query.page - 1) * query.pageSize;
+    const { rows, total } = await this.users.findPage(
+      where,
+      skip,
+      query.pageSize,
+    );
+
+    return {
+      data: rows.map((u) => this.toPublic(u)),
+      total,
+      page: query.page,
+      pageSize: query.pageSize,
+    };
   }
 
   async findById(id: string, actor: AuthenticatedUser): Promise<PublicUser> {
@@ -102,33 +133,6 @@ export class UsersService {
     }
     const updated = await this.users.update(id, dto);
     return this.toPublic(updated);
-  }
-
-  private async resolveTargetChurch(
-    actor: AuthenticatedUser,
-    role: UserRole,
-    requested?: string,
-  ): Promise<string | null> {
-    if (role === UserRole.SUPER_ADMIN) {
-      return null;
-    }
-
-    if (isSuperAdmin(actor)) {
-      if (!requested) {
-        throw new BadRequestException('churchId is required when a super admin creates a non-super-admin user');
-      }
-      const church = await this.churches.findById(requested);
-      if (!church) throw new BadRequestException('Church not found');
-      return church.id;
-    }
-
-    if (!actor.churchId) {
-      throw new ForbiddenException('Account is not associated with a church');
-    }
-    if (requested && requested !== actor.churchId) {
-      throw new ForbiddenException('Cannot create users in another church');
-    }
-    return actor.churchId;
   }
 
   private toPublic(user: User): PublicUser {
