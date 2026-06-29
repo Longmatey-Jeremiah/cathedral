@@ -6,8 +6,12 @@ import {
   NotFoundException,
   forwardRef,
 } from '@nestjs/common';
-import { Church, UserRole } from '@prisma/client';
+import { Church, Prisma, UserRole } from '@prisma/client';
 import { AuthenticatedUser, isSuperAdmin } from '../../common/types/authenticated-user';
+import {
+  Paginated,
+  PaginationQueryDto,
+} from '../../common/dto/pagination.query.dto';
 import { InvitesService } from '../invites/invites.service';
 import { ChurchesRepository } from './churches.repository';
 import { CreateChurchDto } from './dto/create-church.dto';
@@ -44,8 +48,22 @@ export class ChurchesService {
     return { ...church, inviteUrl };
   }
 
-  findAll(): Promise<Church[]> {
-    return this.churches.findAll();
+  async findAll(query: PaginationQueryDto): Promise<Paginated<Church>> {
+    const where: Prisma.ChurchWhereInput = query.q
+      ? {
+          OR: [
+            { name: { contains: query.q, mode: 'insensitive' } },
+            { slug: { contains: query.q, mode: 'insensitive' } },
+          ],
+        }
+      : {};
+    const skip = (query.page - 1) * query.pageSize;
+    const { rows, total } = await this.churches.findPage(
+      where,
+      skip,
+      query.pageSize,
+    );
+    return { data: rows, total, page: query.page, pageSize: query.pageSize };
   }
 
   async findById(id: string, user: AuthenticatedUser): Promise<Church> {
