@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  keepPreviousData,
   useMutation,
   useQuery,
   useQueryClient,
@@ -13,17 +14,21 @@ import type {
   UpdateDepartmentInput,
 } from '@/shared/lib/rules/departments';
 import type { Department } from '@/types/departments';
+import type { ListParams, Paginated } from '@/shared/lib/list';
 
 export const departmentKeys = {
   all: ['departments'] as const,
-  list: () => [...departmentKeys.all, 'list'] as const,
+  lists: () => [...departmentKeys.all, 'list'] as const,
+  list: (params: ListParams = {}) =>
+    [...departmentKeys.lists(), params] as const,
   detail: (id: string) => [...departmentKeys.all, 'detail', id] as const,
 };
 
-export function useDepartments() {
-  return useQuery<Department[], ApiError>({
-    queryKey: departmentKeys.list(),
-    queryFn: departmentsService.list,
+export function useDepartments(params: ListParams = {}) {
+  return useQuery<Paginated<Department>, ApiError>({
+    queryKey: departmentKeys.list(params),
+    queryFn: () => departmentsService.list(params),
+    placeholderData: keepPreviousData,
   });
 }
 
@@ -42,7 +47,7 @@ export function useCreateDepartment(
   return useMutation<Department, ApiError, CreateDepartmentInput>({
     mutationFn: departmentsService.create,
     onSuccess: (data, variables, onMutateResult, context) => {
-      qc.invalidateQueries({ queryKey: departmentKeys.list() });
+      qc.invalidateQueries({ queryKey: departmentKeys.lists() });
       options?.onSuccess?.(data, variables, onMutateResult, context);
     },
     ...options,
@@ -57,7 +62,7 @@ export function useUpdateDepartment(
   return useMutation<Department, ApiError, UpdateDepartmentInput>({
     mutationFn: (input) => departmentsService.update(id, input),
     onSuccess: (data, variables, onMutateResult, context) => {
-      qc.invalidateQueries({ queryKey: departmentKeys.list() });
+      qc.invalidateQueries({ queryKey: departmentKeys.lists() });
       qc.invalidateQueries({ queryKey: departmentKeys.detail(id) });
       options?.onSuccess?.(data, variables, onMutateResult, context);
     },
@@ -72,7 +77,7 @@ export function useDeleteDepartment(
   return useMutation<{ success: true }, ApiError, string>({
     mutationFn: (id) => departmentsService.remove(id),
     onSuccess: (data, variables, onMutateResult, context) => {
-      qc.invalidateQueries({ queryKey: departmentKeys.list() });
+      qc.invalidateQueries({ queryKey: departmentKeys.lists() });
       qc.removeQueries({ queryKey: departmentKeys.detail(variables) });
       options?.onSuccess?.(data, variables, onMutateResult, context);
     },

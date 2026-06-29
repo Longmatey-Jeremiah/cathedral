@@ -14,11 +14,22 @@ export class UsersRepository {
     return this.prisma.user.findUnique({ where: { email } });
   }
 
-  findAll(where: Prisma.UserWhereInput = {}): Promise<User[]> {
-    return this.prisma.user.findMany({
-      where,
-      orderBy: { createdAt: 'desc' },
-    });
+  /** One round trip: a page of rows + the total matching count. */
+  async findPage(
+    where: Prisma.UserWhereInput,
+    skip: number,
+    take: number,
+  ): Promise<{ rows: User[]; total: number }> {
+    const [rows, total] = await this.prisma.$transaction([
+      this.prisma.user.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take,
+      }),
+      this.prisma.user.count({ where }),
+    ]);
+    return { rows, total };
   }
 
   create(data: Prisma.UserCreateInput): Promise<User> {

@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { FiAtSign, FiUser } from 'react-icons/fi';
+import { FiPhone, FiUser } from 'react-icons/fi';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCreateMember } from '@/hooks/members';
 import { ApiError } from '@/services/api';
@@ -33,7 +33,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { fadeUp, stagger } from '@/shared/lib/motion';
-import { UserRole } from '@/shared/lib/types';
 
 const inlineInput =
   'h-11 flex-1 border-0 bg-transparent p-0 text-[15px] text-foreground placeholder:text-muted-foreground/80 focus:outline-none focus:ring-0';
@@ -46,12 +45,12 @@ export default function NewMemberPage() {
     defaultValues: {
       firstName: '',
       lastName: '',
-      email: '',
-      role: UserRole.VIEWER,
+      phone: '',
+      status: 'VISITOR',
     },
   });
 
-  // POST /users — generates a temp password + emails it.
+  // POST /members — a church/domain record, separate from any auth account.
   const create = useCreateMember({
     onSuccess: () => {
       setCreated(true);
@@ -78,20 +77,18 @@ export default function NewMemberPage() {
 
       <PageHeader
         className="mt-3"
-        eyebrow="New account"
+        eyebrow="New member"
         title={
           <>
             Add a <Emph>member</Emph>.
           </>
         }
-        description="Creates an account with a one-time temporary password emailed to them. They will be required to set a new password on first sign-in."
+        description="Creates a church member record. Members are people in your church — separate from sign-in accounts. Assign departments and update status any time."
       />
 
       {created ? (
         <motion.div variants={fadeUp} className="mt-6">
-          <Alert tone="success">
-            Account created. A temporary password has been emailed.
-          </Alert>
+          <Alert tone="success">Member added to the directory.</Alert>
         </motion.div>
       ) : null}
 
@@ -106,11 +103,7 @@ export default function NewMemberPage() {
         className="mt-8 rounded-[var(--radius-cards)] border border-border bg-card p-6 shadow-card sm:p-8"
       >
         <Form {...form}>
-          <form
-            noValidate
-            onSubmit={onSubmit}
-            className="flex flex-col gap-5"
-          >
+          <form noValidate onSubmit={onSubmit} className="flex flex-col gap-5">
             <div className="grid gap-5 sm:grid-cols-2">
               <FormField
                 control={form.control}
@@ -157,18 +150,18 @@ export default function NewMemberPage() {
 
             <FormField
               control={form.control}
-              name="email"
+              name="phone"
               render={({ field, fieldState }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>Phone</FormLabel>
                   <FormControl>
                     <InputGroup
                       invalid={Boolean(fieldState.error)}
-                      startAdornment={<FiAtSign size={16} aria-hidden />}
+                      startAdornment={<FiPhone size={16} aria-hidden />}
                     >
                       <input
-                        type="email"
-                        placeholder="naana@church.org"
+                        type="tel"
+                        placeholder="+233 55 123 4567"
                         className={inlineInput}
                         {...field}
                       />
@@ -181,22 +174,19 @@ export default function NewMemberPage() {
 
             <FormField
               control={form.control}
-              name="role"
+              name="status"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Role</FormLabel>
+                  <FormLabel>Status</FormLabel>
                   <FormControl>
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="ADMIN">Admin</SelectItem>
-                        <SelectItem value="FINANCE">Finance</SelectItem>
-                        <SelectItem value="DEPARTMENT_LEADER">
-                          Department leader
-                        </SelectItem>
-                        <SelectItem value="VIEWER">Viewer</SelectItem>
+                        <SelectItem value="ACTIVE">Active</SelectItem>
+                        <SelectItem value="INACTIVE">Inactive</SelectItem>
+                        <SelectItem value="VISITOR">Visitor</SelectItem>
                       </SelectContent>
                     </Select>
                   </FormControl>

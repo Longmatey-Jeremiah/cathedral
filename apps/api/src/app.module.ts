@@ -7,6 +7,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ChurchesModule } from './modules/churches/churches.module';
 import { DepartmentsModule } from './modules/departments/departments.module';
+import { MembersModule } from './modules/members/members.module';
 import { UsersModule } from './modules/users/users.module';
 import { InvitesModule } from './modules/invites/invites.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
@@ -22,6 +23,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
     AuthModule,
     ChurchesModule,
     DepartmentsModule,
+    MembersModule,
     UsersModule,
     InvitesModule,
     NotificationsModule,

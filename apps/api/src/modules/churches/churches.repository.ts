@@ -14,8 +14,21 @@ export class ChurchesRepository {
     return this.prisma.church.findUnique({ where: { slug } });
   }
 
-  findAll(): Promise<Church[]> {
-    return this.prisma.church.findMany({ orderBy: { createdAt: 'desc' } });
+  async findPage(
+    where: Prisma.ChurchWhereInput,
+    skip: number,
+    take: number,
+  ): Promise<{ rows: Church[]; total: number }> {
+    const [rows, total] = await this.prisma.$transaction([
+      this.prisma.church.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take,
+      }),
+      this.prisma.church.count({ where }),
+    ]);
+    return { rows, total };
   }
 
   create(data: Prisma.ChurchCreateInput): Promise<Church> {

@@ -4,11 +4,15 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Department } from '@prisma/client';
+import { Department, Prisma } from '@prisma/client';
 import {
   AuthenticatedUser,
   isSuperAdmin,
 } from '../../common/types/authenticated-user';
+import {
+  Paginated,
+  PaginationQueryDto,
+} from '../../common/dto/pagination.query.dto';
 import { DepartmentsRepository } from './departments.repository';
 import { CreateDepartmentDto } from './dto/create-department.dto';
 import { UpdateDepartmentDto } from './dto/update-department.dto';
@@ -35,13 +39,37 @@ export class DepartmentsService {
     });
   }
 
-  findAll(actor: AuthenticatedUser): Promise<Department[]> {
-    if (isSuperAdmin(actor)) {
-      return this.departments.findAll({});
-    }
+  async findAll(
+    actor: AuthenticatedUser,
+    query: PaginationQueryDto,
+  ): Promise<Paginated<Department>> {
     // Church-scoped roles without a church see nothing.
-    if (!actor.churchId) return Promise.resolve([]);
-    return this.departments.findAll({ churchId: actor.churchId });
+    if (!isSuperAdmin(actor) && !actor.churchId) {
+      return { data: [], total: 0, page: query.page, pageSize: query.pageSize };
+    }
+
+    // churchId is non-null here for church-scoped roles — the guard above
+    // returned early when it was missing.
+    const tenant: Prisma.DepartmentWhereInput = isSuperAdmin(actor)
+      ? {}
+      : { churchId: actor.churchId! };
+    const search: Prisma.DepartmentWhereInput = query.q
+      ? {
+          OR: [
+            { name: { contains: query.q, mode: 'insensitive' } },
+            { description: { contains: query.q, mode: 'insensitive' } },
+          ],
+        }
+      : {};
+
+    const where: Prisma.DepartmentWhereInput = { AND: [tenant, search] };
+    const skip = (query.page - 1) * query.pageSize;
+    const { rows, total } = await this.departments.findPage(
+      where,
+      skip,
+      query.pageSize,
+    );
+    return { data: rows, total, page: query.page, pageSize: query.pageSize };
   }
 
   async findById(id: string, actor: AuthenticatedUser): Promise<Department> {

@@ -7,6 +7,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { UserRole } from '@prisma/client';
@@ -15,6 +16,7 @@ import { Roles } from '../../common/decorators/roles.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { AuthenticatedUser } from '../../common/types/authenticated-user';
+import { PaginationQueryDto } from '../../common/dto/pagination.query.dto';
 import { DepartmentsService } from './departments.service';
 import { CreateDepartmentDto } from './dto/create-department.dto';
 import { UpdateDepartmentDto } from './dto/update-department.dto';
@@ -35,8 +37,11 @@ export class DepartmentsController {
 
   @Get()
   @Roles(UserRole.ADMIN, UserRole.DEPARTMENT_LEADER)
-  findAll(@CurrentUser() actor: AuthenticatedUser) {
-    return this.departments.findAll(actor);
+  findAll(
+    @CurrentUser() actor: AuthenticatedUser,
+    @Query() query: PaginationQueryDto,
+  ) {
+    return this.departments.findAll(actor, query);
   }
 
   @Get(':id')
