@@ -16,11 +16,21 @@ export class DepartmentsRepository {
     });
   }
 
-  findAll(where: Prisma.DepartmentWhereInput): Promise<Department[]> {
-    return this.prisma.department.findMany({
-      where,
-      orderBy: { name: 'asc' },
-    });
+  async findPage(
+    where: Prisma.DepartmentWhereInput,
+    skip: number,
+    take: number,
+  ): Promise<{ rows: Department[]; total: number }> {
+    const [rows, total] = await this.prisma.$transaction([
+      this.prisma.department.findMany({
+        where,
+        orderBy: { name: 'asc' },
+        skip,
+        take,
+      }),
+      this.prisma.department.count({ where }),
+    ]);
+    return { rows, total };
   }
 
   create(data: Prisma.DepartmentCreateInput): Promise<Department> {

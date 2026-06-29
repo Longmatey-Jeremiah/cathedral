@@ -1,53 +1,64 @@
-import type { Member } from '@/types/members';
+import type {
+  Member,
+  MemberListItem,
+  MemberStatus,
+  DepartmentRole,
+} from '@/types/members';
 import { api } from '@/services/api';
-import type { UserRole, UserStatus } from '@/shared/lib/types';
+import {
+  clean,
+  listQuery,
+  type ListParams,
+  type Paginated,
+} from '@/shared/lib/list';
 
-/** Raw user as returned by the API (`PublicUser` — User without password). */
-interface ApiUser {
-  id: string;
-  email: string;
-  firstName: string | null;
-  lastName: string | null;
-  role: UserRole;
-  status: UserStatus;
-  churchId: string | null;
-  createdAt: string;
-  updatedAt: string;
+export interface ListMembersParams extends ListParams {
+  status?: MemberStatus;
+  departmentId?: string;
+  sortBy?: 'name' | 'status' | 'joinDate';
+  sortDir?: 'asc' | 'desc';
 }
 
-export interface CreateMemberInput {
+export interface DepartmentAssignment {
+  departmentId: string;
+  role?: DepartmentRole;
+}
+
+export type CreateMemberInput = {
   firstName: string;
   lastName: string;
-  email: string;
-  role: UserRole;
-}
+  phone?: string;
+  status?: MemberStatus;
+  userId?: string;
+  departments?: DepartmentAssignment[];
+};
 
-export interface UpdateMemberInput {
+export type UpdateMemberInput = {
   firstName?: string;
   lastName?: string;
-  role?: UserRole;
-  status?: UserStatus;
-}
+  phone?: string;
+  status?: MemberStatus;
+  departments?: DepartmentAssignment[];
+};
 
-// Members are `users` on the API. Map to the UI's Member shape — the API has
-// no `department`, and exposes the join date as `createdAt`.
-function toMember(u: ApiUser): Member {
-  return {
-    id: u.id,
-    firstName: u.firstName ?? '',
-    lastName: u.lastName ?? '',
-    email: u.email,
-    role: u.role,
-    status: u.status,
-    joinedAt: u.createdAt,
-  };
+export type MemberPage = Paginated<MemberListItem>;
+
+function query(params: ListMembersParams = {}): string {
+  const search = new URLSearchParams(listQuery(params));
+  if (params.status) search.set('status', params.status);
+  if (params.departmentId) search.set('departmentId', params.departmentId);
+  if (params.sortBy) search.set('sortBy', params.sortBy);
+  if (params.sortDir) search.set('sortDir', params.sortDir);
+  return search.toString();
 }
 
 export const membersService = {
-  list: () => api.get<ApiUser[]>('/users').then((rows) => rows.map(toMember)),
-  get: (id: string) => api.get<ApiUser>(`/users/${id}`).then(toMember),
+  list: (params?: ListMembersParams): Promise<MemberPage> =>
+    api.get<MemberPage>(`/members?${query(params)}`),
+  get: (id: string) => api.get<Member>(`/members/${id}`),
   create: (input: CreateMemberInput) =>
-    api.post<ApiUser>('/users', input).then(toMember),
+    api.post<Member>('/members', clean(input)),
   update: (id: string, input: UpdateMemberInput) =>
-    api.patch<ApiUser>(`/users/${id}`, input).then(toMember),
+    api.patch<Member>(`/members/${id}`, clean(input)),
+  remove: (id: string) => api.delete<{ success: true }>(`/members/${id}`),
 };

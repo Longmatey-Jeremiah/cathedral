@@ -7,6 +7,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { UserRole } from '@prisma/client';
@@ -15,6 +16,7 @@ import { Roles } from '../../common/decorators/roles.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { AuthenticatedUser } from '../../common/types/authenticated-user';
+import { PaginationQueryDto } from '../../common/dto/pagination.query.dto';
 import { ChurchesService } from './churches.service';
 import { CreateChurchDto } from './dto/create-church.dto';
 import { UpdateChurchDto } from './dto/update-church.dto';
@@ -35,8 +37,8 @@ export class ChurchesController {
 
   @Get()
   @Roles(UserRole.SUPER_ADMIN)
-  findAll() {
-    return this.churches.findAll();
+  findAll(@Query() query: PaginationQueryDto) {
+    return this.churches.findAll(query);
   }
 
   @Get(':id')

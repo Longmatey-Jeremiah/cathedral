@@ -1,6 +1,7 @@
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
@@ -23,6 +24,17 @@ async function bootstrap() {
   );
 
   app.useGlobalFilters(new HttpExceptionFilter());
+
+  // Served at /api/docs (JSON at /api/docs-json). Bearer auth so protected
+  // routes are callable from the UI after pasting an access token.
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('Church Management Platform API')
+    .setDescription('Auth, users, invites, churches, departments.')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+  SwaggerModule.setup('docs', app, document);
 
   const port = config.get<number>('PORT') ?? 4000;
   await app.listen(port);

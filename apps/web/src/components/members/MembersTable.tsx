@@ -1,15 +1,21 @@
 'use client';
 
+import { memo } from 'react';
 import Link from 'next/link';
 import { FiArrowUpRight } from 'react-icons/fi';
 import { Avatar } from '@/components/admin/Avatar';
 import { DataTable, type Column } from '@/components/admin/DataTable';
-import { StatusBadge } from '@/components/admin/StatusBadge';
-import type { Member } from '@/types/members';
-import { RoleBadge } from './RoleBadge';
+import { StatusBadge, type BadgeTone } from '@/components/admin/StatusBadge';
+import type { MemberListItem, MemberStatus } from '@/types/members';
 
-export function MembersTable({ members }: { members: Member[] }) {
-  const columns: Column<Member>[] = [
+const STATUS: Record<MemberStatus, { tone: BadgeTone; label: string }> = {
+  ACTIVE: { tone: 'success', label: 'Active' },
+  INACTIVE: { tone: 'neutral', label: 'Inactive' },
+  VISITOR: { tone: 'warning', label: 'Visitor' },
+};
+
+function MembersTableBase({ members }: { members: MemberListItem[] }) {
+  const columns: Column<MemberListItem>[] = [
     {
       key: 'name',
       header: 'Name',
@@ -18,46 +24,33 @@ export function MembersTable({ members }: { members: Member[] }) {
           href={`/dashboard/members/${m.id}`}
           className="flex items-center gap-3"
         >
-          <Avatar name={`${m.firstName} ${m.lastName}`} />
-          <div className="min-w-0">
-            <div className="truncate text-[14px] font-medium text-foreground">
-              {m.firstName} {m.lastName}
-            </div>
-            <div className="truncate text-[11px] text-muted-foreground">
-              {m.email}
-            </div>
-          </div>
+          <Avatar name={m.name} />
+          <span className="truncate text-[14px] font-medium text-foreground">
+            {m.name}
+          </span>
         </Link>
       ),
     },
     {
-      key: 'role',
-      header: 'Role',
-      cell: (m) => <RoleBadge role={m.role} />,
+      key: 'phone',
+      header: 'Phone',
+      className: 'hidden md:table-cell text-foreground',
+      cell: (m) => m.phone ?? '—',
     },
     {
-      key: 'department',
-      header: 'Department',
-      className: 'hidden md:table-cell text-foreground',
-      cell: (m) => m.department ?? '—',
+      key: 'departments',
+      header: 'Departments',
+      className: 'hidden lg:table-cell text-foreground',
+      cell: (m) => m.departmentCount,
     },
     {
       key: 'status',
       header: 'Status',
       cell: (m) => (
-        <StatusBadge
-          dot
-          tone={m.status === 'ACTIVE' ? 'success' : 'warning'}
-        >
-          {m.status === 'ACTIVE' ? 'Active' : 'Pending'}
+        <StatusBadge dot tone={STATUS[m.status].tone}>
+          {STATUS[m.status].label}
         </StatusBadge>
       ),
-    },
-    {
-      key: 'joined',
-      header: 'Joined',
-      className: 'hidden lg:table-cell text-[12px] text-muted-foreground',
-      cell: (m) => formatDate(m.joinedAt),
     },
     {
       key: 'actions',
@@ -66,7 +59,7 @@ export function MembersTable({ members }: { members: Member[] }) {
       cell: (m) => (
         <Link
           href={`/dashboard/members/${m.id}`}
-          aria-label={`Open ${m.firstName}`}
+          aria-label={`Open ${m.name}`}
           className="inline-grid h-8 w-8 place-items-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
         >
           <FiArrowUpRight size={14} />
@@ -78,14 +71,6 @@ export function MembersTable({ members }: { members: Member[] }) {
   return <DataTable data={members} columns={columns} rowKey={(m) => m.id} />;
 }
 
-function formatDate(iso: string): string {
-  try {
-    return new Date(iso).toLocaleDateString(undefined, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  } catch {
-    return iso;
-  }
-}
+// Rows are pure in their `members` prop — memo skips re-render on unrelated
+// parent state (search box keystrokes, etc.).
+export const MembersTable = memo(MembersTableBase);
