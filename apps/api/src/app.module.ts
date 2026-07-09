@@ -11,6 +11,7 @@ import { MembersModule } from './modules/members/members.module';
 import { UsersModule } from './modules/users/users.module';
 import { InvitesModule } from './modules/invites/invites.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
+import { AiModule } from './modules/ai/ai.module';
 import { AttendanceModule } from './modules/attendance/attendance.module';
 import { RolesModule } from './modules/roles/roles.module';
 
@@ -29,6 +30,7 @@ import { RolesModule } from './modules/roles/roles.module';
     UsersModule,
     InvitesModule,
     NotificationsModule,
+    AiModule,
     AttendanceModule,
     RolesModule,
   ],
