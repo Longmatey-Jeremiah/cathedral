@@ -21,6 +21,7 @@ describe('InvitesService — invite/accept safety', () => {
       claim: jest.fn().mockResolvedValue(true),
       create: jest.fn().mockResolvedValue(invite),
       supersedeForEmail: jest.fn().mockResolvedValue(undefined),
+      list: jest.fn().mockResolvedValue([]),
     };
     const users = {
       findByEmail: jest.fn(),
@@ -101,5 +102,15 @@ describe('InvitesService — invite/accept safety', () => {
     const supersedeOrder = invites.supersedeForEmail.mock.invocationCallOrder[0];
     const createOrder = invites.create.mock.invocationCallOrder[0];
     expect(supersedeOrder).toBeLessThan(createOrder);
+  });
+
+  it('scopes list to the admin church; super admin sees all', () => {
+    const { service, invites } = build();
+
+    service.list({ id: 'a', email: 'admin@x.test', role: UserRole.ADMIN, churchId: 'church-1' } as never);
+    expect(invites.list).toHaveBeenCalledWith({ churchId: 'church-1' });
+
+    service.list({ id: 's', email: 'root@x.test', role: UserRole.SUPER_ADMIN, churchId: null } as never);
+    expect(invites.list).toHaveBeenCalledWith({});
   });
 });

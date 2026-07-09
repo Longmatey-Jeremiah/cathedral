@@ -30,6 +30,17 @@ export class InvitesController {
     return this.invites.invite(dto, actor);
   }
 
+  // 'list' (not @Get()) so the path is 3 segments: `users/invite/list`. A plain
+  // GET on `users/invite` collides with UsersController's `users/:id` and 400s
+  // on ParseUUIDPipe — and reordering can't fix it since InvitesModule imports
+  // UsersModule, so users' routes always register first.
+  @Get('list')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  list(@CurrentUser() actor: AuthenticatedUser) {
+    return this.invites.list(actor);
+  }
+
   @Get('validate')
   @Public()
   validate(@Query('token') token: string) {

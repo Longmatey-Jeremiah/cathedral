@@ -2,7 +2,8 @@ import type { ApiErrorPayload } from '@/shared/lib/types';
 import { store } from '@/store';
 
 const BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000/api';
+  process.env.NEXT_PUBLIC_API_URL ??
+  'https://fzm08khz-4000.uks1.devtunnels.ms/';
 
 /**
  * Typed wrapper around the API's HttpExceptionFilter response.
@@ -14,9 +15,13 @@ export class ApiError extends Error {
   readonly status: number;
   readonly payload: ApiErrorPayload | null;
 
-  constructor(status: number, payload: ApiErrorPayload | null, fallback: string) {
+  constructor(
+    status: number,
+    payload: ApiErrorPayload | null,
+    fallback: string,
+  ) {
     const raw = payload?.message;
-    const message = Array.isArray(raw) ? raw.join('. ') : raw ?? fallback;
+    const message = Array.isArray(raw) ? raw.join('. ') : (raw ?? fallback);
     super(message);
     this.name = 'ApiError';
     this.status = status;
@@ -43,7 +48,10 @@ interface RequestOptions extends Omit<RequestInit, 'body'> {
   anonymous?: boolean;
 }
 
-async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
+async function request<T>(
+  path: string,
+  options: RequestOptions = {},
+): Promise<T> {
   const { body, anonymous, headers, ...rest } = options;
 
   const finalHeaders = new Headers(headers);
@@ -64,7 +72,11 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
     });
   } catch {
     // Network error / CORS / DNS — surface as a uniform ApiError(0).
-    throw new ApiError(0, null, 'Could not reach the server. Check your connection.');
+    throw new ApiError(
+      0,
+      null,
+      'Could not reach the server. Check your connection.',
+    );
   }
 
   if (response.status === 204) {

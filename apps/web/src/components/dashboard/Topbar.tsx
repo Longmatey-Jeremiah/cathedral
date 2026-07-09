@@ -1,6 +1,6 @@
 'use client';
 
-import { FiBell, FiMenu, FiSearch } from 'react-icons/fi';
+import { FiBell, FiMenu } from 'react-icons/fi';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { cn } from '@/shared/lib/cn';
 import type { UserRole } from '@/shared/lib/types';
