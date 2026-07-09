@@ -64,3 +64,41 @@ describe('UsersService.findAll', () => {
     expect(res.data[0]).not.toHaveProperty('password');
   });
 });
+
+/** Guards the privilege-escalation path on role update. */
+describe('UsersService.update', () => {
+  function build(target: { churchId: string | null }) {
+    const users = {
+      findById: jest.fn().mockResolvedValue({
+        id: 'u1',
+        churchId: target.churchId,
+        role: UserRole.VIEWER,
+      }),
+      update: jest.fn((_id, dto) =>
+        Promise.resolve({ id: 'u1', password: 'x', ...dto }),
+      ),
+    };
+    const service = new UsersService(users as never, {} as never, {} as never);
+    return { service, users };
+  }
+
+  const admin = { id: 'a', email: 'a@x', role: UserRole.ADMIN, churchId: 'c1' };
+
+  it('rejects a non-super-admin promoting to SUPER_ADMIN', async () => {
+    const { service } = build({ churchId: 'c1' });
+    await expect(
+      service.update('u1', { role: UserRole.SUPER_ADMIN }, admin as never),
+    ).rejects.toThrow('super admin');
+  });
+
+  it('lets a super admin promote to SUPER_ADMIN', async () => {
+    const { service } = build({ churchId: 'c1' });
+    const superAdmin = { ...admin, role: UserRole.SUPER_ADMIN, churchId: null };
+    const res = await service.update(
+      'u1',
+      { role: UserRole.SUPER_ADMIN },
+      superAdmin as never,
+    );
+    expect(res.role).toBe(UserRole.SUPER_ADMIN);
+  });
+});

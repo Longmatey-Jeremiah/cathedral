@@ -1,9 +1,9 @@
 'use client';
 
-import { RoleBadge } from '@/components/members/RoleBadge';
 import { Avatar } from '@/components/admin/Avatar';
 import { DataTable, type Column } from '@/components/admin/DataTable';
 import { StatusBadge } from '@/components/admin/StatusBadge';
+import { RoleSelect } from '@/components/users/RoleSelect';
 import type { PlatformUser } from '@/types/platform-users';
 
 export function PlatformUsersTable({
@@ -35,7 +35,7 @@ export function PlatformUsersTable({
     {
       key: 'role',
       header: 'Role',
-      cell: (u) => <RoleBadge role={u.role} />,
+      cell: (u) => <RoleSelect userId={u.id} role={u.role} />,
     },
     {
       key: 'church',
