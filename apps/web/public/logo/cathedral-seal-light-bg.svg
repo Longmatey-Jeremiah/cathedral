@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100" role="img" aria-label="Cathedral">
+  <rect x="0" y="0" width="100" height="100" fill="#FFFFFF"></rect>
+  <g fill="none" stroke="#2A2622" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="50" cy="50" r="46" stroke-width="2.6"></circle>
+    <circle cx="50" cy="50" r="39.5" stroke-width="1.3"></circle>
+  </g>
+  <g fill="none" stroke="#B08A4A" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="50" cy="50" r="21" stroke-width="1.6"></circle>
+    <circle cx="50" cy="50" r="5.6" stroke-width="1.6"></circle>
+    <path d="M56.00 50.00 L71.00 50.00 M54.24 54.24 L64.85 64.85 M50.00 56.00 L50.00 71.00 M45.76 54.24 L35.15 64.85 M44.00 50.00 L29.00 50.00 M45.76 45.76 L35.15 35.15 M50.00 44.00 L50.00 29.00 M54.24 45.76 L64.85 35.15" stroke-width="1.6"></path>
+    <path d="M63.86 55.74 L67.09 57.08 M55.74 63.86 L57.08 67.09 M44.26 63.86 L42.92 67.09 M36.14 55.74 L32.91 57.08 M36.14 44.26 L32.91 42.92 M44.26 36.14 L42.92 32.91 M55.74 36.14 L57.08 32.91 M63.86 44.26 L67.09 42.92" stroke-width="1.1" opacity="0.75"></path>
+  </g>
+</svg>

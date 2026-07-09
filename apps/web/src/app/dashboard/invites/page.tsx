@@ -3,7 +3,9 @@
 import { motion } from 'framer-motion';
 import { FiMail } from 'react-icons/fi';
 import { InvitesTable } from '@/components/invites/InvitesTable';
-import { invites, inviteStatus } from '@/mocks/invites';
+import { EmptyState } from '@/components/admin/EmptyState';
+import { useInvites } from '@/hooks/invites';
+import { inviteStatus } from '@/types/invites';
 import { LinkButton } from '@/components/Button';
 import { Emph } from '@/components/Emph';
 import { KpiCard } from '@/components/admin/KpiCard';
@@ -11,6 +13,8 @@ import { PageHeader } from '@/components/admin/PageHeader';
 import { stagger } from '@/shared/lib/motion';
 
 export default function InvitesPage() {
+  const { data: invites = [], isLoading } = useInvites();
+
   const pending = invites.filter((i) => inviteStatus(i) === 'pending').length;
   const used = invites.filter((i) => inviteStatus(i) === 'used').length;
   const expired = invites.filter((i) => inviteStatus(i) === 'expired').length;
@@ -60,7 +64,23 @@ export default function InvitesPage() {
       </section>
 
       <div className="mt-6">
-        <InvitesTable invites={invites} />
+        {isLoading ? (
+          <p className="text-sm text-muted-foreground">Loading invites…</p>
+        ) : invites.length === 0 ? (
+          <EmptyState
+            icon={FiMail}
+            title="No invites yet"
+            description="Invite a teammate and they'll get a single-use link tied to the role you choose."
+            action={
+              <LinkButton href="/dashboard/invites/new" size="md">
+                <FiMail size={16} aria-hidden />
+                Send invite
+              </LinkButton>
+            }
+          />
+        ) : (
+          <InvitesTable invites={invites} />
+        )}
       </div>
     </motion.div>
   );

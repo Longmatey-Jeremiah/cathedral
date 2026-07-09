@@ -2,15 +2,24 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { FiAtSign } from 'react-icons/fi';
+import { FiAtSign, FiCheck, FiCopy } from 'react-icons/fi';
 import { z } from 'zod';
 import { Emph } from '@/components/Emph';
 import { BackLink } from '@/components/admin/BackLink';
 import { PageHeader } from '@/components/admin/PageHeader';
 import { Alert } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -28,6 +37,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useSendInvite } from '@/hooks/invites';
 import { fadeUp, stagger } from '@/shared/lib/motion';
 import { UserRole } from '@/shared/lib/types';
 
@@ -41,17 +51,26 @@ const inlineInput =
   'h-11 flex-1 border-0 bg-transparent p-0 text-[15px] text-foreground placeholder:text-muted-foreground/80 focus:outline-none focus:ring-0';
 
 export default function NewInvitePage() {
-  const [sent, setSent] = useState<string | null>(null);
+  const router = useRouter();
+  const [sent, setSent] = useState<{ email: string; inviteUrl: string } | null>(
+    null,
+  );
 
   const form = useForm<Values>({
     resolver: zodResolver(schema),
     defaultValues: { email: '', role: UserRole.VIEWER },
   });
 
+  const send = useSendInvite({
+    onSuccess: (result) => {
+      setSent({ email: result.email, inviteUrl: result.inviteUrl });
+      form.reset({ email: '', role: UserRole.VIEWER });
+    },
+  });
+
   const onSubmit = form.handleSubmit((values) => {
-    // TODO(api): POST /users/invite — server hashes a token, mails it.
-    setSent(values.email);
-    form.reset({ email: '', role: UserRole.VIEWER });
+    setSent(null);
+    send.mutate(values);
   });
 
   return (
@@ -76,11 +95,15 @@ export default function NewInvitePage() {
         description="They will receive a single-use link tied to the role you choose. The link expires in 72 hours."
       />
 
-      {sent ? (
+      <InviteSentDialog
+        sent={sent}
+        onInviteAnother={() => setSent(null)}
+        onFinish={() => router.push('/dashboard/invites')}
+      />
+
+      {send.error ? (
         <motion.div variants={fadeUp} className="mt-6">
-          <Alert tone="success">
-            Invite sent to <span className="font-medium">{sent}</span>.
-          </Alert>
+          <Alert tone="error">{send.error.message}</Alert>
         </motion.div>
       ) : null}
 
@@ -152,11 +175,70 @@ export default function NewInvitePage() {
             />
 
             <div className="flex justify-end pt-2">
-              <Button type="submit">Send invite</Button>
+              <Button type="submit" disabled={send.isPending}>
+                {send.isPending ? 'Sending…' : 'Send invite'}
+              </Button>
             </div>
           </form>
         </Form>
       </motion.section>
     </motion.div>
+  );
+}
+
+function InviteSentDialog({
+  sent,
+  onInviteAnother,
+  onFinish,
+}: {
+  sent: { email: string; inviteUrl: string } | null;
+  onInviteAnother: () => void;
+  onFinish: () => void;
+}) {
+  const [copied, setCopied] = useState(false);
+
+  const copy = async () => {
+    if (!sent) return;
+    await navigator.clipboard.writeText(sent.inviteUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <Dialog open={Boolean(sent)} onOpenChange={(open) => !open && onFinish()}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Invite sent</DialogTitle>
+          <DialogDescription>
+            A single-use link is on its way to{' '}
+            <span className="font-medium text-foreground">{sent?.email}</span>.
+            You can also copy it and share directly.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="flex items-center gap-2 rounded-[var(--radius-cards)] border border-border bg-muted/40 p-2">
+          <span className="flex-1 truncate px-1 text-[13px] text-muted-foreground">
+            {sent?.inviteUrl}
+          </span>
+          <Button type="button" variant="outline" size="sm" onClick={copy}>
+            {copied ? (
+              <FiCheck size={14} aria-hidden />
+            ) : (
+              <FiCopy size={14} aria-hidden />
+            )}
+            {copied ? 'Copied' : 'Copy'}
+          </Button>
+        </div>
+
+        <DialogFooter>
+          <Button type="button" variant="outline" onClick={onInviteAnother}>
+            Invite another
+          </Button>
+          <Button type="button" onClick={onFinish}>
+            Finish
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
