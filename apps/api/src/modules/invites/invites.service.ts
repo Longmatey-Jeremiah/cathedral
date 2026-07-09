@@ -55,6 +55,7 @@ export class InvitesService {
       email: dto.email,
       role: dto.role,
       tokenHash,
+      token,
       expiresAt,
       ...(targetChurchId
         ? { church: { connect: { id: targetChurchId } } }
@@ -73,6 +74,17 @@ export class InvitesService {
     // Returned so callers can surface/copy the link directly — useful while
     // email delivery is still a log-only stub (notifications.service send()).
     return { email: dto.email, expiresAt, inviteUrl };
+  }
+
+  // Church admins see their own church's invites; a super admin sees all.
+  async list(actor: AuthenticatedUser) {
+    const where = isSuperAdmin(actor) ? {} : { churchId: actor.churchId };
+    const rows = await this.invites.list(where);
+    const appUrl = this.config.get<string>('APP_URL') ?? '';
+    return rows.map(({ token, ...rest }) => ({
+      ...rest,
+      inviteUrl: token ? `${appUrl}/invite/accept?token=${token}` : null,
+    }));
   }
 
   async validate(token: string) {

@@ -10,6 +10,25 @@ export class InvitesRepository {
     return this.prisma.userInvite.create({ data });
   }
 
+  // ponytail: no pagination — invite lists are small; add it if one ever grows.
+  // tokenHash is deliberately excluded — it never leaves the server.
+  list(where: Prisma.UserInviteWhereInput) {
+    return this.prisma.userInvite.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        token: true,
+        expiresAt: true,
+        used: true,
+        createdAt: true,
+        churchId: true,
+      },
+    });
+  }
+
   /**
    * Invalidate every still-open invite for an email. Called before issuing a
    * fresh one so only the newest token is ever live — a re-invite (e.g. to fix

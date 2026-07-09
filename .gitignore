@@ -402,3 +402,4 @@ dist
 # Turbo & Next.js
 .turbo
 .next
+.neon

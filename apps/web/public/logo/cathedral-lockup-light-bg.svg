@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 120" width="560" height="120" role="img" aria-label="Cathedral — Church Management">
+  <rect x="0" y="0" width="560" height="120" fill="#FFFFFF"></rect>
+  <g transform="translate(18,18)"><g fill="none" stroke="#2A2622" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="42" cy="42" r="40.32" stroke-width="2.6"></circle>
+    <circle cx="42" cy="42" r="34.44" stroke-width="1.3"></circle>
+  </g>
+  <g fill="none" stroke="#B08A4A" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="42" cy="42" r="17.64" stroke-width="1.6"></circle>
+    <circle cx="42" cy="42" r="4.76" stroke-width="1.6"></circle>
+    <path d="M47.12 42.00 L59.64 42.00 M45.62 45.62 L54.47 54.47 M42.00 47.12 L42.00 59.64 M38.38 45.62 L29.53 54.47 M36.88 42.00 L24.36 42.00 M38.38 38.38 L29.53 29.53 M42.00 36.88 L42.00 24.36 M45.62 38.38 L54.47 29.53" stroke-width="1.6"></path>
+  </g></g>
+  <line x1="122" y1="26" x2="122" y2="94" stroke="#2A2622" stroke-width="1" opacity="0.25"></line>
+  <text x="148" y="66" font-family="Cormorant Garamond, Georgia, serif" font-weight="600" font-size="40" letter-spacing="6" fill="#2A2622">CATHEDRAL</text>
+  <text x="150" y="89" font-family="Jost, Helvetica, Arial, sans-serif" font-weight="400" font-size="10" letter-spacing="4.5" fill="#9A9085">CHURCH MANAGEMENT</text>
+</svg>
