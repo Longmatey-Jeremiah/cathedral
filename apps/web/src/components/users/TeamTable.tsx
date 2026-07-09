@@ -4,14 +4,10 @@ import { Avatar } from '@/components/admin/Avatar';
 import { DataTable, type Column } from '@/components/admin/DataTable';
 import { StatusBadge } from '@/components/admin/StatusBadge';
 import { RoleSelect } from '@/components/users/RoleSelect';
-import type { PlatformUser } from '@/types/platform-users';
+import type { User } from '@/shared/lib/types';
 
-export function PlatformUsersTable({
-  users,
-}: {
-  users: PlatformUser[];
-}) {
-  const columns: Column<PlatformUser>[] = [
+export function TeamTable({ users }: { users: User[] }) {
+  const columns: Column<User>[] = [
     {
       key: 'name',
       header: 'User',
@@ -38,45 +34,16 @@ export function PlatformUsersTable({
       cell: (u) => <RoleSelect userId={u.id} role={u.role} />,
     },
     {
-      key: 'church',
-      header: 'Church',
-      className: 'hidden md:table-cell',
-      cell: (u) =>
-        u.churchName ? (
-          <span className="text-foreground">{u.churchName}</span>
-        ) : (
-          <span className="text-muted-foreground">— platform</span>
-        ),
-    },
-    {
       key: 'status',
       header: 'Status',
+      align: 'right',
       cell: (u) => (
         <StatusBadge dot tone={u.status === 'ACTIVE' ? 'success' : 'warning'}>
           {u.status === 'ACTIVE' ? 'Active' : 'Pending'}
         </StatusBadge>
       ),
     },
-    {
-      key: 'lastSignIn',
-      header: 'Last sign-in',
-      align: 'right',
-      className: 'hidden lg:table-cell text-[12px] text-muted-foreground',
-      cell: (u) => (u.lastSignIn ? formatDate(u.lastSignIn) : '—'),
-    },
   ];
 
   return <DataTable data={users} columns={columns} rowKey={(u) => u.id} />;
-}
-
-function formatDate(iso: string): string {
-  try {
-    return new Date(iso).toLocaleDateString(undefined, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  } catch {
-    return iso;
-  }
 }

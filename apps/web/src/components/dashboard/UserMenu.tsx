@@ -32,22 +32,29 @@ export function UserMenu({ name, email, role }: Props) {
         <button
           type="button"
           className={cn(
-            'flex items-center gap-2 rounded-full border border-border bg-muted/90 px-1.5 py-1 pr-3',
+            'flex items-center rounded-full border border-border bg-muted/90 px-1 py-1',
             'transition hover:border-foreground/15 hover:bg-muted',
             'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
           )}
         >
-          <Avatar name={name} tone="tangerine" size="sm" />
-          <span className="hidden text-[12px] font-medium text-foreground sm:inline">
+          <Avatar
+            name={name}
+            tone="tangerine"
+            size="sm"
+            className="rounded-full"
+          />
+          {/* <span className="hidden text-[12px] font-medium text-foreground sm:inline">
             {name}
-          </span>
+          </span> */}
         </button>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end" sideOffset={8} className="w-64">
         <div className="px-3 pb-2 pt-2">
           <div className="text-[13px] font-medium text-foreground">{name}</div>
-          <div className="truncate text-[11px] text-muted-foreground">{email}</div>
+          <div className="truncate text-[11px] text-muted-foreground">
+            {email}
+          </div>
           <Badge tone="neutral" className="mt-2">
             {roleDescriptions[role]}
           </Badge>

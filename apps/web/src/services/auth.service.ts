@@ -12,6 +12,15 @@ export interface InviteDetails {
   churchId: string | null;
 }
 
+export interface LoginSession {
+  id: string;
+  userAgent: string | null;
+  ip: string | null;
+  createdAt: string;
+  lastSeenAt: string;
+  current: boolean;
+}
+
 export const authService = {
   login: (input: LoginInput) =>
     api.post<LoginResponse>('/auth/login', input, { anonymous: true }),
@@ -34,4 +43,9 @@ export const authService = {
 
   acceptInvite: (input: AcceptInviteInput & { token: string }) =>
     api.post<{ id: string }>('/auth/accept-invite', input, { anonymous: true }),
+
+  listSessions: () => api.get<LoginSession[]>('/auth/sessions'),
+
+  revokeSession: (id: string) =>
+    api.delete<{ success: true }>(`/auth/sessions/${id}`),
 };

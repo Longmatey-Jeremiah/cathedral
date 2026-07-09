@@ -86,6 +86,7 @@ model User {
   member             Member?
   recordedSessions   AttendanceSession[] @relation("SessionRecorder")
   reviewedSessions   AttendanceSession[] @relation("SessionReviewer")
+  loginSessions      Session[]
   createdAt          DateTime   @default(now())
   updatedAt          DateTime   @updatedAt
 
@@ -107,6 +108,22 @@ model UserInvite {
   @@index([email])
   @@index([tokenHash])
   @@index([churchId])
+}
+
+// A login session — one per device/refresh-token lineage. Created on login,
+// touched on refresh, revoked on sign-out. Backs the "active sessions" list.
+model Session {
+  id               String   @id @default(uuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refreshTokenHash String // sha256 of the current refresh token — rotated each refresh
+  userAgent        String?
+  ip               String?
+  createdAt        DateTime @default(now())
+  lastSeenAt       DateTime @default(now())
+  revokedAt        DateTime? // null = active
+
+  @@index([userId])
 }
 
 // Church/domain entity — distinct from User (auth). A member MAY link to a

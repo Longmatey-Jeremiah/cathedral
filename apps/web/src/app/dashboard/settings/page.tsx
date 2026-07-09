@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/auth-context';
 import { PreferencesCard } from '@/components/settings/PreferencesCard';
 import { ProfileForm } from '@/components/settings/ProfileForm';
+import { SessionsList } from '@/components/settings/SessionsList';
 import { Emph } from '@/components/Emph';
 import { PageHeader } from '@/components/admin/PageHeader';
 import {
@@ -67,20 +68,7 @@ export default function SettingsPage() {
               <p className="mt-1 text-[13px] text-muted-foreground">
                 Update your password or review recent sessions.
               </p>
-              <ul className="mt-5 space-y-2 text-[13px] text-foreground">
-                <li className="flex items-center justify-between rounded-[var(--radius-cardinner)] bg-muted px-3 py-2">
-                  <span>This device · Accra</span>
-                  <span className="text-[11px] text-muted-foreground">
-                    Active now
-                  </span>
-                </li>
-                <li className="flex items-center justify-between rounded-[var(--radius-cardinner)] bg-muted px-3 py-2">
-                  <span>Mac · Chrome · Accra</span>
-                  <span className="text-[11px] text-muted-foreground">
-                    2 days ago
-                  </span>
-                </li>
-              </ul>
+              <SessionsList />
             </section>
           </TabsContent>
         </Tabs>

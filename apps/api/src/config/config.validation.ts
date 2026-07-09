@@ -58,6 +58,14 @@ class EnvironmentVariables {
   @IsString()
   @IsOptional()
   MAIL_FROM?: string;
+
+  @IsString()
+  @IsOptional()
+  OLLAMA_URL: string = 'http://localhost:11434';
+
+  @IsString()
+  @IsOptional()
+  OLLAMA_MODEL: string = 'llama3.2';
 }
 
 export function configValidationSchema(config: Record<string, unknown>) {
