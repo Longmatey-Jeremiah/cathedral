@@ -28,6 +28,8 @@ interface Props<Row> {
   columns: Column<Row>[];
   /** Stable key extractor for each row. */
   rowKey: (row: Row) => string;
+  /** Optional: make the whole row clickable (e.g. navigate to a detail page). */
+  onRowClick?: (row: Row) => void;
   className?: string;
 }
 
@@ -39,6 +41,7 @@ export function DataTable<Row>({
   data,
   columns,
   rowKey,
+  onRowClick,
   className,
 }: Props<Row>) {
   return (
@@ -67,7 +70,11 @@ export function DataTable<Row>({
         </TableHeader>
         <TableBody>
           {data.map((row) => (
-            <TableRow key={rowKey(row)}>
+            <TableRow
+              key={rowKey(row)}
+              onClick={onRowClick ? () => onRowClick(row) : undefined}
+              className={cn(onRowClick && 'cursor-pointer')}
+            >
               {columns.map((col) => (
                 <TableCell
                   key={col.key}
