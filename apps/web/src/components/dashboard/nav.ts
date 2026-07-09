@@ -56,6 +56,12 @@ export const navGroups: NavGroup[] = [
         roles: [UserRole.ADMIN, UserRole.FINANCE, UserRole.VIEWER],
       },
       {
+        label: 'Team & roles',
+        href: '/dashboard/team',
+        icon: FiShield,
+        roles: [UserRole.ADMIN],
+      },
+      {
         label: 'Invites',
         href: '/dashboard/invites',
         icon: FiMail,
