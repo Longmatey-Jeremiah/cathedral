@@ -1,11 +1,16 @@
 'use client';
 
-import { useMutation, type UseMutationOptions } from '@tanstack/react-query';
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  type UseMutationOptions,
+} from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useCallback } from 'react';
 import { ApiError } from '@/services/api';
 import type { LoginResponse, UserRole } from '@/shared/lib/types';
-import { authService } from '@/services/auth.service';
+import { authService, type LoginSession } from '@/services/auth.service';
 import { useAuth } from './auth-context';
 import type { ChangePasswordInput, LoginInput } from '@/shared/lib/rules/auth';
 
@@ -63,4 +68,23 @@ export function useHasRole(...allowed: UserRole[]) {
   const { user } = useAuth();
   if (!user) return false;
   return allowed.includes(user.role);
+}
+
+const sessionKeys = { list: ['auth', 'sessions'] as const };
+
+/** Active login sessions for the signed-in user. */
+export function useLoginSessions() {
+  return useQuery<LoginSession[], ApiError>({
+    queryKey: sessionKeys.list,
+    queryFn: authService.listSessions,
+  });
+}
+
+/** Revoke (sign out) one session, then refresh the list. */
+export function useRevokeSession() {
+  const qc = useQueryClient();
+  return useMutation<{ success: true }, ApiError, string>({
+    mutationFn: authService.revokeSession,
+    onSuccess: () => qc.invalidateQueries({ queryKey: sessionKeys.list }),
+  });
 }
