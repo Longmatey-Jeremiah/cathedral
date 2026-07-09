@@ -99,6 +99,9 @@ model UserInvite {
   email     String
   role      UserRole
   tokenHash String
+  // Raw token kept so an admin can re-view/copy the invite link later. Deliberate
+  // trade-off: a DB leak exposes usable links until they expire or are used.
+  token     String?
   expiresAt DateTime
   used      Boolean  @default(false)
   createdAt DateTime @default(now())
