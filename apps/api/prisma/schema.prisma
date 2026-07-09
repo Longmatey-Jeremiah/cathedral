@@ -20,6 +20,12 @@ enum UserRole {
   VIEWER
 }
 
+enum AttendanceStatus {
+  DRAFT // being recorded, editable
+  SUBMITTED // handed off for review
+  REVIEWED // signed off, locked
+}
+
 enum MemberStatus {
   ACTIVE
   INACTIVE
@@ -46,6 +52,7 @@ model Church {
   invites     UserInvite[]
   departments Department[]
   members     Member[]
+  sessions    AttendanceSession[]
 
   @@index([slug])
 }
@@ -77,6 +84,8 @@ model User {
   churchId           String?
   church             Church?    @relation(fields: [churchId], references: [id], onDelete: Cascade)
   member             Member?
+  recordedSessions   AttendanceSession[] @relation("SessionRecorder")
+  reviewedSessions   AttendanceSession[] @relation("SessionReviewer")
   createdAt          DateTime   @default(now())
   updatedAt          DateTime   @updatedAt
 
@@ -119,6 +128,7 @@ model Member {
   updatedAt DateTime     @updatedAt
 
   departments MemberDepartment[]
+  attendance  Attendance[]
 
   @@index([userId])
   @@index([status])
@@ -136,4 +146,42 @@ model MemberDepartment {
   @@id([memberId, departmentId]) // composite primary key
   @@index([memberId])
   @@index([departmentId])
+}
+
+// A church gathering (service, meeting, event) on a given date. Attendance is
+// recorded against a session.
+model AttendanceSession {
+  id        String   @id @default(uuid())
+  churchId  String
+  church    Church   @relation(fields: [churchId], references: [id], onDelete: Cascade)
+  title     String
+  date      DateTime
+  status    AttendanceStatus @default(DRAFT)
+
+  recordedById String
+  recordedBy   User   @relation("SessionRecorder", fields: [recordedById], references: [id])
+  reviewedById String?
+  reviewedBy   User?  @relation("SessionReviewer", fields: [reviewedById], references: [id])
+  reviewedAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  records Attendance[]
+
+  @@index([churchId, date]) // tenant + date-ordered listing, the common query
+}
+
+// A present-mark: the row existing means the member attended the session.
+// No present/absent flag — absence is simply the absence of a row.
+model Attendance {
+  sessionId String
+  session   AttendanceSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  memberId  String
+  member    Member            @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  markedAt  DateTime          @default(now())
+
+  @@id([sessionId, memberId]) // composite primary key
+  @@index([sessionId])
+  @@index([memberId])
 }
