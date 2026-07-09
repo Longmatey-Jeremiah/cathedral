@@ -6,6 +6,7 @@ const config: NextConfig = {
   // routes (/dashboard, /forgot-password) trip the typed Link constraint.
   // Turn back on once the route surface settles.
   typedRoutes: false,
+  allowedDevOrigins: ['cathedral-tf1r.onrender.com'],
   env: {
     NEXT_PUBLIC_API_URL:
       process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000/api',

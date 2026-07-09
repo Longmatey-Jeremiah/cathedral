@@ -11,7 +11,12 @@ async function bootstrap() {
   const config = app.get(ConfigService);
 
   app.use(helmet());
-  app.enableCors({ origin: config.get<string>('APP_URL') ?? true, credentials: true });
+  // APP_URL is a comma-separated allowlist of frontend origins.
+  const appUrl = config.get<string>('APP_URL');
+  const origin = appUrl
+    ? appUrl.split(',').map((o) => o.trim()).filter(Boolean)
+    : true;
+  app.enableCors({ origin, credentials: true });
   app.setGlobalPrefix('api');
 
   app.useGlobalPipes(
