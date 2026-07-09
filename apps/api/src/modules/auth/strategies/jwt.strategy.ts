@@ -10,6 +10,7 @@ interface JwtPayload {
   email: string;
   role: UserRole;
   churchId: string | null;
+  sid?: string;
 }
 
 @Injectable()
@@ -28,6 +29,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       email: payload.email,
       role: payload.role,
       churchId: payload.churchId ?? null,
+      sessionId: payload.sid,
     };
   }
 }

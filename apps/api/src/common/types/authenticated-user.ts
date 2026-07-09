@@ -5,6 +5,8 @@ export interface AuthenticatedUser {
   email: string;
   role: UserRole;
   churchId: string | null;
+  /** The login session this access token belongs to, when present. */
+  sessionId?: string;
 }
 
 export const isSuperAdmin = (user: { role: UserRole }) =>
