@@ -6,12 +6,24 @@ export interface Actor {
   name: string;
 }
 
+/** A recurring kind of gathering — Sunday Service, Bible Study, Vigil. */
+export interface ServiceType {
+  id: string;
+  churchId: string;
+  name: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 /** A row the sessions list renders. */
 export interface SessionListItem {
   id: string;
   title: string;
   date: string;
   status: AttendanceStatus;
+  /** Null for a one-off gathering with no service type. */
+  serviceType: string | null;
   recordedBy: string;
   presentCount: number;
 }
@@ -30,6 +42,8 @@ export interface SessionDetail {
   title: string;
   date: string;
   status: AttendanceStatus;
+  serviceTypeId: string | null;
+  serviceType: { id: string; name: string } | null;
   recordedBy: Actor;
   reviewedBy: Actor | null;
   reviewedAt: string | null;
