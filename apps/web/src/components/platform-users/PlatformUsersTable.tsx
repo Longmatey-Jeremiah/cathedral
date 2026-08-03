@@ -4,7 +4,21 @@ import { Avatar } from '@/components/admin/Avatar';
 import { DataTable, type Column } from '@/components/admin/DataTable';
 import { StatusBadge } from '@/components/admin/StatusBadge';
 import { RoleSelect } from '@/components/users/RoleSelect';
+import { exportDate, type ExportColumn } from '@/shared/lib/export';
 import type { PlatformUser } from '@/types/platform-users';
+
+export const platformUserExportColumns: ExportColumn<PlatformUser>[] = [
+  {
+    header: 'Name',
+    value: (u) => [u.firstName, u.lastName].filter(Boolean).join(' ') || u.email,
+  },
+  { header: 'Email', value: (u) => u.email },
+  { header: 'Role', value: (u) => u.role },
+  { header: 'Status', value: (u) => u.status },
+  { header: 'Church', value: (u) => u.churchName },
+  { header: 'Last sign-in', value: (u) => exportDate(u.lastSignIn) },
+  { header: 'Created', value: (u) => exportDate(u.createdAt) },
+];
 
 export function PlatformUsersTable({
   users,
