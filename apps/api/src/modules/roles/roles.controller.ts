@@ -12,6 +12,7 @@ const ROLE_LABELS: Record<UserRole, string> = {
   [UserRole.ADMIN]: 'Admin',
   [UserRole.FINANCE]: 'Finance',
   [UserRole.DEPARTMENT_LEADER]: 'Department Leader',
+  [UserRole.MEMBER_CARE]: 'Member Care',
   [UserRole.VIEWER]: 'Viewer',
 };
 
