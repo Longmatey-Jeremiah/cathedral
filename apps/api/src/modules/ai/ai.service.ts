@@ -1,48 +1,104 @@
+import Anthropic from '@anthropic-ai/sdk';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-// Thin client over the local Ollama HTTP API. Native fetch, no SDK.
-// ponytail: plain generate/tags only. Later features reuse generate():
-//   - RAG chat  → POST /api/chat with a messages[] array
-//   - classify  → pass options.format = 'json'
-//   - content   → already the plain prompt→text path below
+const DEFAULT_MODEL = 'claude-opus-5';
+
+const SYSTEM_PROMPT = `You assist staff of a church running the Cathedral platform: membership, attendance, giving, departments, pastoral care, and the reports built from them.
+
+Answer plainly and concisely — lead with the answer, keep caveats short. You have no access to this church's records, so never invent figures, names, or dates: when a number would be needed, say what the user should pull from the relevant module and leave a clearly marked placeholder.`;
+
+// Thin wrapper over the Anthropic SDK.
+// ponytail: prompt→text and messages→stream. Later features reuse them:
+//   - classify → output_config.format with a json_schema
+//   - RAG      → prepend retrieved records as a user turn before the question
 @Injectable()
 export class AiService {
+  private readonly client = new Anthropic(); // reads ANTHROPIC_API_KEY
+
   constructor(private readonly config: ConfigService) {}
 
-  private get baseUrl(): string {
-    return this.config.get<string>('OLLAMA_URL') ?? 'http://localhost:11434';
+  private get model(): string {
+    return this.config.get<string>('ANTHROPIC_MODEL') ?? DEFAULT_MODEL;
   }
 
-  private async call<T>(path: string, init?: RequestInit): Promise<T> {
-    let res: Response;
-    try {
-      res = await fetch(`${this.baseUrl}${path}`, init);
-    } catch {
-      throw new HttpException('Ollama is unreachable', HttpStatus.SERVICE_UNAVAILABLE);
-    }
-    if (!res.ok) {
+  private rethrow(err: unknown): never {
+    if (err instanceof Anthropic.APIConnectionError) {
       throw new HttpException(
-        `Ollama error (${res.status})`,
+        'Anthropic is unreachable',
+        HttpStatus.SERVICE_UNAVAILABLE,
+      );
+    }
+    if (err instanceof Anthropic.APIError) {
+      throw new HttpException(
+        `Anthropic error (${err.status}): ${err.message}`,
         HttpStatus.BAD_GATEWAY,
       );
     }
-    return res.json() as Promise<T>;
+    throw err;
   }
 
-  /** Liveness: returns the models Ollama has pulled. */
-  async tags(): Promise<{ models: { name: string }[] }> {
-    return this.call('/api/tags');
+  private async guard<T>(fn: () => Promise<T>): Promise<T> {
+    try {
+      return await fn();
+    } catch (err) {
+      this.rethrow(err);
+    }
+  }
+
+  /** Liveness: returns the model ids the API key can reach. */
+  async models(): Promise<string[]> {
+    const page = await this.guard(() => this.client.models.list({ limit: 20 }));
+    return page.data.map((m) => m.id);
+  }
+
+  /**
+   * Conversation → text chunks as they arrive.
+   *
+   * Thinking is on but not displayed, so only text deltas are yielded — the
+   * caller sees nothing until the model starts writing its answer.
+   */
+  async *stream(
+    messages: { role: 'user' | 'assistant'; content: string }[],
+    model?: string,
+  ): AsyncGenerator<string> {
+    const stream = this.client.messages.stream({
+      model: model ?? this.model,
+      max_tokens: 16000,
+      thinking: { type: 'adaptive' },
+      system: SYSTEM_PROMPT,
+      messages,
+    });
+
+    try {
+      for await (const event of stream) {
+        if (
+          event.type === 'content_block_delta' &&
+          event.delta.type === 'text_delta'
+        ) {
+          yield event.delta.text;
+        }
+      }
+    } catch (err) {
+      this.rethrow(err);
+    }
   }
 
   /** Single prompt → completion. Non-streaming. */
   async generate(prompt: string, model?: string): Promise<string> {
-    const chosen = model ?? this.config.get<string>('OLLAMA_MODEL') ?? 'llama3.2';
-    const data = await this.call<{ response: string }>('/api/generate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: chosen, prompt, stream: false }),
-    });
-    return data.response;
+    const message = await this.guard(() =>
+      this.client.messages.create({
+        model: model ?? this.model,
+        max_tokens: 16000,
+        thinking: { type: 'adaptive' },
+        system: SYSTEM_PROMPT,
+        messages: [{ role: 'user', content: prompt }],
+      }),
+    );
+    // Content may lead with a thinking block — never index [0] blindly.
+    return message.content
+      .filter((b) => b.type === 'text')
+      .map((b) => b.text)
+      .join('');
   }
 }
