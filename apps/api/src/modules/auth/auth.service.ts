@@ -54,6 +54,26 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
+    return this.issueSession(user, ctx);
+  }
+
+  /**
+   * Sign in with a Google-verified email. Accounts are never created here —
+   * the platform is invite-only, so an unknown or non-active email is refused
+   * exactly like a bad password.
+   */
+  async loginWithGoogle(email: string, ctx: RequestContext = {}) {
+    const user = await this.users.findByEmail(email);
+    if (!user || user.status !== UserStatus.ACTIVE) {
+      throw new UnauthorizedException(
+        'No active account for this Google address',
+      );
+    }
+    return this.issueSession(user, ctx);
+  }
+
+  /** Mint a session plus its token pair, and the payload the client stores. */
+  private async issueSession(user: User, ctx: RequestContext) {
     // Create the session first so its id can be embedded in the tokens, then
     // record the hash of the issued refresh token against it.
     const session = await this.sessions.create({

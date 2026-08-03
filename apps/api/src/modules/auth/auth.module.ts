@@ -8,6 +8,7 @@ import { UsersModule } from '../users/users.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { SessionsRepository } from './sessions.repository';
+import { GoogleStrategy } from './strategies/google.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
@@ -28,7 +29,14 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, SessionsRepository, JwtStrategy],
+  providers: [
+    AuthService,
+    SessionsRepository,
+    JwtStrategy,
+    // Only registered when Google is configured — the strategy throws at
+    // construction on a missing client id, so an unset env must not load it.
+    ...(process.env.GOOGLE_CLIENT_ID ? [GoogleStrategy] : []),
+  ],
   exports: [AuthService],
 })
 export class AuthModule {}
