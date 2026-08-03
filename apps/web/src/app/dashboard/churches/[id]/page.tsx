@@ -78,6 +78,7 @@ export default function ChurchDetailPage() {
                 phone: church.phone ?? '',
                 email: church.email ?? '',
                 isActive: church.isActive,
+                defaultCurrency: church.defaultCurrency,
               }}
               submitLabel="Save changes"
               pendingLabel="Saving…"

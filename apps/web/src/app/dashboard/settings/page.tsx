@@ -1,7 +1,10 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { UserRole } from '@/shared/lib/types';
 import { useAuth } from '@/hooks/auth-context';
+import { useHasRole } from '@/hooks/auth';
+import { BranchSettingsCard } from '@/components/settings/BranchSettingsCard';
 import { PreferencesCard } from '@/components/settings/PreferencesCard';
 import { ProfileForm } from '@/components/settings/ProfileForm';
 import { SessionsList } from '@/components/settings/SessionsList';
@@ -17,6 +20,7 @@ import { fadeUp, stagger } from '@/shared/lib/motion';
 
 export default function SettingsPage() {
   const { user } = useAuth();
+  const canEditBranch = useHasRole(UserRole.ADMIN, UserRole.SUPER_ADMIN);
   if (!user) return null;
 
   return (
@@ -40,6 +44,9 @@ export default function SettingsPage() {
         <Tabs defaultValue="profile">
           <TabsList>
             <TabsTrigger value="profile">Profile</TabsTrigger>
+            {canEditBranch ? (
+              <TabsTrigger value="branch">Branch</TabsTrigger>
+            ) : null}
             <TabsTrigger value="notifications">Notifications</TabsTrigger>
             <TabsTrigger value="security">Security</TabsTrigger>
           </TabsList>
@@ -55,6 +62,12 @@ export default function SettingsPage() {
               />
             </section>
           </TabsContent>
+
+          {canEditBranch ? (
+            <TabsContent value="branch">
+              <BranchSettingsCard />
+            </TabsContent>
+          ) : null}
 
           <TabsContent value="notifications">
             <PreferencesCard />

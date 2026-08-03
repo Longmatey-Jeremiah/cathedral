@@ -18,6 +18,7 @@ export const churchExportColumns: ExportColumn<Church>[] = [
   { header: 'Email', value: (c) => c.email },
   { header: 'Phone', value: (c) => c.phone },
   { header: 'Address', value: (c) => c.address },
+  { header: 'Currency', value: (c) => c.defaultCurrency },
   { header: 'Status', value: (c) => (c.isActive ? 'Active' : 'Inactive') },
   { header: 'Created', value: (c) => exportDate(c.createdAt) },
 ];
