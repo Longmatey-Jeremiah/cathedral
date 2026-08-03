@@ -31,6 +31,16 @@ const columns: Column<SessionListItem>[] = [
     ),
   },
   {
+    key: 'serviceType',
+    header: 'Type',
+    className: 'hidden sm:table-cell',
+    cell: (s) => (
+      <span className="text-[13px] text-muted-foreground">
+        {s.serviceType ?? '—'}
+      </span>
+    ),
+  },
+  {
     key: 'date',
     header: 'Date',
     cell: (s) => (

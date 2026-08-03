@@ -8,13 +8,14 @@ import {
 } from '@tanstack/react-query';
 import {
   attendanceService,
+  type CreateServiceTypeInput,
   type CreateSessionInput,
   type ListSessionsParams,
   type SessionPage,
   type UpdateSessionInput,
 } from '@/services/attendance.service';
 import type { ApiError } from '@/services/api';
-import type { SessionDetail } from '@/types/attendance';
+import type { ServiceType, SessionDetail } from '@/types/attendance';
 
 export const attendanceKeys = {
   all: ['attendance'] as const,
@@ -22,7 +23,24 @@ export const attendanceKeys = {
   list: (params: ListSessionsParams = {}) =>
     [...attendanceKeys.lists(), params] as const,
   detail: (id: string) => [...attendanceKeys.all, 'detail', id] as const,
+  serviceTypes: (includeInactive: boolean) =>
+    [...attendanceKeys.all, 'service-types', includeInactive] as const,
 };
+
+export function useServiceTypes(includeInactive = false) {
+  return useQuery<ServiceType[], ApiError>({
+    queryKey: attendanceKeys.serviceTypes(includeInactive),
+    queryFn: () => attendanceService.listServiceTypes(includeInactive),
+  });
+}
+
+export function useCreateServiceType() {
+  const qc = useQueryClient();
+  return useMutation<ServiceType, ApiError, CreateServiceTypeInput>({
+    mutationFn: attendanceService.createServiceType,
+    onSuccess: () => qc.invalidateQueries({ queryKey: attendanceKeys.all }),
+  });
+}
 
 export function useSessions(params: ListSessionsParams = {}) {
   return useQuery<SessionPage, ApiError>({

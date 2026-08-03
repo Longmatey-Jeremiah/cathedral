@@ -61,11 +61,12 @@ model Church {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  users       User[]
-  invites     UserInvite[]
-  departments Department[]
-  members     Member[]
-  sessions    AttendanceSession[]
+  users        User[]
+  invites      UserInvite[]
+  departments  Department[]
+  members      Member[]
+  sessions     AttendanceSession[]
+  serviceTypes ServiceType[]
 
   @@index([slug])
 }
@@ -86,22 +87,22 @@ model Department {
 }
 
 model User {
-  id                 String     @id @default(uuid())
-  email              String     @unique
+  id                 String              @id @default(uuid())
+  email              String              @unique
   password           String?
   firstName          String?
   lastName           String?
   role               UserRole
-  status             UserStatus @default(PENDING)
-  mustChangePassword Boolean    @default(false)
+  status             UserStatus          @default(PENDING)
+  mustChangePassword Boolean             @default(false)
   churchId           String?
-  church             Church?    @relation(fields: [churchId], references: [id], onDelete: Cascade)
+  church             Church?             @relation(fields: [churchId], references: [id], onDelete: Cascade)
   member             Member?
   recordedSessions   AttendanceSession[] @relation("SessionRecorder")
   reviewedSessions   AttendanceSession[] @relation("SessionReviewer")
   loginSessions      Session[]
-  createdAt          DateTime   @default(now())
-  updatedAt          DateTime   @updatedAt
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
 
   @@index([email])
   @@index([churchId])
@@ -129,14 +130,14 @@ model UserInvite {
 // A login session — one per device/refresh-token lineage. Created on login,
 // touched on refresh, revoked on sign-out. Backs the "active sessions" list.
 model Session {
-  id               String   @id @default(uuid())
+  id               String    @id @default(uuid())
   userId           String
-  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   refreshTokenHash String // sha256 of the current refresh token — rotated each refresh
   userAgent        String?
   ip               String?
-  createdAt        DateTime @default(now())
-  lastSeenAt       DateTime @default(now())
+  createdAt        DateTime  @default(now())
+  lastSeenAt       DateTime  @default(now())
   revokedAt        DateTime? // null = active
 
   @@index([userId])
@@ -204,20 +205,42 @@ model MemberDepartment {
   @@index([departmentId])
 }
 
-// A church gathering (service, meeting, event) on a given date. Attendance is
-// recorded against a session.
-model AttendanceSession {
+// A recurring kind of gathering — Sunday Service, Bible Study, Vigil. Church-
+// scoped lookup, same shape as Fund.
+model ServiceType {
   id        String   @id @default(uuid())
   churchId  String
   church    Church   @relation(fields: [churchId], references: [id], onDelete: Cascade)
-  title     String
-  date      DateTime
-  status    AttendanceStatus @default(DRAFT)
+  name      String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sessions AttendanceSession[]
+
+  @@unique([churchId, name])
+  @@index([churchId, isActive])
+}
+
+// A church gathering (service, meeting, event) on a given date. Attendance is
+// recorded against a session.
+model AttendanceSession {
+  id       String           @id @default(uuid())
+  churchId String
+  church   Church           @relation(fields: [churchId], references: [id], onDelete: Cascade)
+  title    String
+  date     DateTime
+  status   AttendanceStatus @default(DRAFT)
+
+  // Optional: sessions predating service types (and one-off gatherings) have none.
+  // Restrict, not cascade — retiring a type must never delete attendance history.
+  serviceTypeId String?
+  serviceType   ServiceType? @relation(fields: [serviceTypeId], references: [id], onDelete: Restrict)
 
   recordedById String
-  recordedBy   User   @relation("SessionRecorder", fields: [recordedById], references: [id])
+  recordedBy   User      @relation("SessionRecorder", fields: [recordedById], references: [id])
   reviewedById String?
-  reviewedBy   User?  @relation("SessionReviewer", fields: [reviewedById], references: [id])
+  reviewedBy   User?     @relation("SessionReviewer", fields: [reviewedById], references: [id])
   reviewedAt   DateTime?
 
   createdAt DateTime @default(now())

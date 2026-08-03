@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useCreateSession } from '@/hooks/attendance';
+import { ServiceTypeField } from '@/components/attendance/ServiceTypeField';
 import { BackLink } from '@/components/admin/BackLink';
 import { Button } from '@/components/Button';
 import { Emph } from '@/components/Emph';
@@ -20,12 +21,17 @@ export default function NewServicePage() {
   const [title, setTitle] = useState('');
   // ponytail: native date input — no picker lib for one field.
   const [date, setDate] = useState('');
+  const [serviceTypeId, setServiceTypeId] = useState('');
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !date) return;
     create.mutate(
-      { title: title.trim(), date: new Date(date).toISOString() },
+      {
+        title: title.trim(),
+        date: new Date(date).toISOString(),
+        ...(serviceTypeId ? { serviceTypeId } : {}),
+      },
       { onSuccess: (s) => router.push(`/dashboard/attendance/${s.id}`) },
     );
   };
@@ -78,6 +84,8 @@ export default function NewServicePage() {
             required
           />
         </div>
+
+        <ServiceTypeField value={serviceTypeId} onChange={setServiceTypeId} />
 
         <Button type="submit" disabled={create.isPending}>
           {create.isPending ? 'Creating…' : 'Create service'}

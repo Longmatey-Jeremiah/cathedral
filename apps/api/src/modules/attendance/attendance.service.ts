@@ -5,7 +5,12 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { AttendanceSession, AttendanceStatus, Prisma } from '@prisma/client';
+import {
+  AttendanceSession,
+  AttendanceStatus,
+  Prisma,
+  ServiceType,
+} from '@prisma/client';
 import {
   AuthenticatedUser,
   isSuperAdmin,
@@ -16,6 +21,10 @@ import { CreateSessionDto } from './dto/create-session.dto';
 import { UpdateSessionDto } from './dto/update-session.dto';
 import { MarkAttendanceDto } from './dto/mark-attendance.dto';
 import { SessionListQueryDto } from './dto/session-list.query.dto';
+import {
+  CreateServiceTypeDto,
+  UpdateServiceTypeDto,
+} from './dto/service-type.dto';
 
 type NamedUser = {
   firstName: string | null;
@@ -33,6 +42,7 @@ export interface SessionListItem {
   title: string;
   date: Date;
   status: AttendanceStatus;
+  serviceType: string | null;
   recordedBy: string;
   presentCount: number;
 }
@@ -46,11 +56,17 @@ export class AttendanceService {
     actor: AuthenticatedUser,
   ): Promise<AttendanceSession> {
     const churchId = this.requireChurch(actor);
+    if (dto.serviceTypeId) {
+      await this.assertServiceTypeUsable(dto.serviceTypeId, churchId);
+    }
     return this.attendance.createSession({
       title: dto.title,
       date: dto.date,
       church: { connect: { id: churchId } },
       recordedBy: { connect: { id: actor.id } },
+      ...(dto.serviceTypeId
+        ? { serviceType: { connect: { id: dto.serviceTypeId } } }
+        : {}),
     });
   }
 
@@ -75,6 +91,7 @@ export class AttendanceService {
         title: r.title,
         date: r.date,
         status: r.status,
+        serviceType: r.serviceType?.name ?? null,
         recordedBy: displayName(r.recordedBy),
         presentCount: r._count.records,
       })),
@@ -110,10 +127,101 @@ export class AttendanceService {
   ): Promise<AttendanceSession> {
     const session = await this.getScoped(id, actor);
     this.assertEditable(session);
+    if (dto.serviceTypeId) {
+      await this.assertServiceTypeUsable(dto.serviceTypeId, session.churchId);
+    }
     return this.attendance.updateSession(id, {
       ...(dto.title !== undefined ? { title: dto.title } : {}),
       ...(dto.date !== undefined ? { date: dto.date } : {}),
+      ...(dto.serviceTypeId
+        ? { serviceType: { connect: { id: dto.serviceTypeId } } }
+        : {}),
     });
+  }
+
+  // ---- Service types ----------------------------------------------------
+
+  async listServiceTypes(
+    actor: AuthenticatedUser,
+    includeInactive: boolean,
+  ): Promise<ServiceType[]> {
+    if (!actor.churchId) return [];
+    return this.attendance.findServiceTypes(actor.churchId, includeInactive);
+  }
+
+  async createServiceType(
+    dto: CreateServiceTypeDto,
+    actor: AuthenticatedUser,
+  ): Promise<ServiceType> {
+    const churchId = this.requireChurch(actor);
+    try {
+      return await this.attendance.createServiceType({
+        name: dto.name,
+        church: { connect: { id: churchId } },
+      });
+    } catch (err) {
+      if (
+        err instanceof Prisma.PrismaClientKnownRequestError &&
+        err.code === 'P2002'
+      ) {
+        throw new ConflictException(
+          'A service type with that name already exists',
+        );
+      }
+      throw err;
+    }
+  }
+
+  async updateServiceType(
+    id: string,
+    dto: UpdateServiceTypeDto,
+    actor: AuthenticatedUser,
+  ): Promise<ServiceType> {
+    await this.getScopedServiceType(id, actor);
+    try {
+      return await this.attendance.updateServiceType(id, {
+        ...(dto.name !== undefined ? { name: dto.name } : {}),
+        ...(dto.isActive !== undefined ? { isActive: dto.isActive } : {}),
+      });
+    } catch (err) {
+      if (
+        err instanceof Prisma.PrismaClientKnownRequestError &&
+        err.code === 'P2002'
+      ) {
+        throw new ConflictException(
+          'A service type with that name already exists',
+        );
+      }
+      throw err;
+    }
+  }
+
+  /** A session may only point at an active type in its own church. */
+  private async assertServiceTypeUsable(
+    id: string,
+    churchId: string,
+  ): Promise<void> {
+    const serviceType = await this.attendance.findServiceTypeById(id);
+    if (!serviceType || serviceType.churchId !== churchId) {
+      throw new BadRequestException(
+        'Service type does not exist in this church',
+      );
+    }
+    if (!serviceType.isActive) {
+      throw new BadRequestException('That service type is retired');
+    }
+  }
+
+  private async getScopedServiceType(
+    id: string,
+    actor: AuthenticatedUser,
+  ): Promise<ServiceType> {
+    const serviceType = await this.attendance.findServiceTypeById(id);
+    if (!serviceType) throw new NotFoundException('Service type not found');
+    if (!isSuperAdmin(actor) && serviceType.churchId !== actor.churchId) {
+      throw new NotFoundException('Service type not found');
+    }
+    return serviceType;
   }
 
   async mark(
