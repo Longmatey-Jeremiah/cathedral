@@ -12,8 +12,9 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { DepartmentAssignmentDto } from './department-assignment.dto';
+import { MemberProfileDto } from './member-profile.dto';
 
-export class CreateMemberDto {
+export class CreateMemberDto extends MemberProfileDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(120)

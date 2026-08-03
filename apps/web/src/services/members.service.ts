@@ -2,6 +2,8 @@ import type {
   Member,
   MemberListItem,
   MemberStatus,
+  MaritalStatus,
+  Sex,
   DepartmentRole,
 } from '@/types/members';
 import { api } from '@/services/api';
@@ -24,7 +26,30 @@ export interface DepartmentAssignment {
   role?: DepartmentRole;
 }
 
-export type CreateMemberInput = {
+/** Registration-form fields — sent on create and update alike. */
+export type MemberProfileInput = {
+  sex?: Sex;
+  /** ISO date string. */
+  dateOfBirth?: string;
+  placeOfBirth?: string;
+  address?: string;
+  placeOfResidence?: string;
+  occupation?: string;
+  placeOfWork?: string;
+  society?: string;
+  nextOfKin?: string;
+  parentsName?: string;
+  hometown?: string;
+  maritalStatus?: MaritalStatus;
+  spouseName?: string;
+  spouseOccupation?: string;
+  religiousDenomination?: string;
+  childrenNames?: string[];
+  /** ISO date string. */
+  declarationDate?: string;
+};
+
+export type CreateMemberInput = MemberProfileInput & {
   firstName: string;
   lastName: string;
   phone?: string;
@@ -33,7 +58,7 @@ export type CreateMemberInput = {
   departments?: DepartmentAssignment[];
 };
 
-export type UpdateMemberInput = {
+export type UpdateMemberInput = MemberProfileInput & {
   firstName?: string;
   lastName?: string;
   phone?: string;
