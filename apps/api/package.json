@@ -15,6 +15,7 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:seed": "prisma db seed",
+    "seed:demo": "ts-node prisma/seed-demo.ts",
     "clean": "rm -rf dist .turbo"
   },
   "prisma": {
