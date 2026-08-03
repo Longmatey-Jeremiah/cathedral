@@ -17,6 +17,19 @@ import { ChurchesRepository } from './churches.repository';
 import { CreateChurchDto } from './dto/create-church.dto';
 import { UpdateChurchDto } from './dto/update-church.dto';
 
+/**
+ * What a church ADMIN may edit on their own branch. `slug` and `isActive` stay
+ * with SUPER_ADMIN: one moves every URL, the other locks the branch out.
+ */
+const BRANCH_ADMIN_FIELDS = [
+  'name',
+  'address',
+  'phone',
+  'email',
+  'defaultCurrency',
+] as const;
+type BranchAdminField = (typeof BRANCH_ADMIN_FIELDS)[number];
+
 @Injectable()
 export class ChurchesService {
   constructor(
@@ -37,6 +50,7 @@ export class ChurchesService {
       phone: dto.phone,
       email: dto.email,
       isActive: dto.isActive ?? true,
+      ...(dto.defaultCurrency ? { defaultCurrency: dto.defaultCurrency } : {}),
     });
 
     // Provision the church's first ADMIN and hand back the invite link.
@@ -75,9 +89,27 @@ export class ChurchesService {
     return church;
   }
 
-  async update(id: string, dto: UpdateChurchDto): Promise<Church> {
+  async update(
+    id: string,
+    dto: UpdateChurchDto,
+    actor: AuthenticatedUser,
+  ): Promise<Church> {
     const church = await this.churches.findById(id);
     if (!church) throw new NotFoundException('Church not found');
+
+    if (!isSuperAdmin(actor)) {
+      if (actor.churchId !== church.id) {
+        throw new ForbiddenException('Cannot access this church');
+      }
+      const denied = Object.keys(dto).filter(
+        (k) => !BRANCH_ADMIN_FIELDS.includes(k as BranchAdminField),
+      );
+      if (denied.length > 0) {
+        throw new ForbiddenException(
+          `Only a super admin can change: ${denied.join(', ')}`,
+        );
+      }
+    }
 
     if (dto.slug && dto.slug !== church.slug) {
       const slugTaken = await this.churches.findBySlug(dto.slug);
