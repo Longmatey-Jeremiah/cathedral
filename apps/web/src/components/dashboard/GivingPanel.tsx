@@ -1,39 +1,61 @@
+'use client';
+
 import { PanelCard } from '@/components/admin/PanelCard';
 import { ProgressBar } from '@/components/admin/ProgressBar';
-import { givingByFund } from '@/mocks/dashboard';
+import { useGivingSummary } from '@/hooks/giving';
+import { formatMinor } from '@/shared/lib/money';
 
 export function GivingPanel() {
+  const { data, isLoading } = useGivingSummary();
+
+  const monthLabel = data
+    ? new Date(data.from).toLocaleDateString(undefined, {
+        month: 'long',
+        year: 'numeric',
+      })
+    : '';
+
   return (
     <PanelCard
       title="Giving"
-      subtitle="November · all funds"
+      subtitle={monthLabel ? `${monthLabel} · all funds` : 'This month'}
       action={{ label: 'Open', href: '/dashboard/giving' }}
     >
-      <div className="flex items-end justify-between">
-        <div>
-          <div className="font-display text-[42px] leading-none text-foreground">
-            $48,210
+      {isLoading || !data ? (
+        <p className="py-10 text-[13px] text-muted-foreground">Loading…</p>
+      ) : (
+        <>
+          <div className="flex items-end justify-between">
+            <div>
+              <div className="font-display text-[42px] leading-none text-foreground">
+                {formatMinor(data.totalMinor, data.currency)}
+              </div>
+              <div className="mt-1 text-[12px] text-muted-foreground">
+                {data.donationCount === 1
+                  ? '1 gift recorded'
+                  : `${data.donationCount.toLocaleString()} gifts recorded`}
+              </div>
+            </div>
           </div>
-          <div className="mt-1 text-[12px] text-muted-foreground">
-            +8.6% vs October
-          </div>
-        </div>
-        <div className="text-right">
-          <div className="text-[11px] text-muted-foreground">Recurring</div>
-          <div className="font-display text-[20px] text-foreground">412</div>
-        </div>
-      </div>
 
-      <div className="mt-6 space-y-3">
-        {givingByFund.map((it) => (
-          <ProgressBar
-            key={it.label}
-            label={it.label}
-            trailing={it.amount}
-            value={it.share}
-          />
-        ))}
-      </div>
+          <div className="mt-6 space-y-3">
+            {data.byFund.length === 0 ? (
+              <p className="text-[13px] text-muted-foreground">
+                No giving recorded this month.
+              </p>
+            ) : (
+              data.byFund.map((fund) => (
+                <ProgressBar
+                  key={fund.fundId}
+                  label={fund.name}
+                  trailing={formatMinor(fund.amountMinor, data.currency)}
+                  value={fund.share}
+                />
+              ))
+            )}
+          </div>
+        </>
+      )}
     </PanelCard>
   );
 }
