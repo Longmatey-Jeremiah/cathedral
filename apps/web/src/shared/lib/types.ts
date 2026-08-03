@@ -7,9 +7,20 @@ export const UserRole = {
   ADMIN: 'ADMIN',
   FINANCE: 'FINANCE',
   DEPARTMENT_LEADER: 'DEPARTMENT_LEADER',
+  MEMBER_CARE: 'MEMBER_CARE',
   VIEWER: 'VIEWER',
 } as const;
 export type UserRole = (typeof UserRole)[keyof typeof UserRole];
+
+/** Human-readable role names for menus and profile blurbs. */
+export const roleDescriptions: Record<UserRole, string> = {
+  SUPER_ADMIN: 'Platform operator',
+  ADMIN: 'Church administrator',
+  FINANCE: 'Finance team',
+  DEPARTMENT_LEADER: 'Department leader',
+  MEMBER_CARE: 'Pastoral care',
+  VIEWER: 'Read-only',
+};
 
 export const UserStatus = {
   ACTIVE: 'ACTIVE',
