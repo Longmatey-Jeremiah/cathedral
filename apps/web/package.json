@@ -9,6 +9,7 @@
     "start": "next start --port ${PORT:-3001}",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
+    "test": "node --test \"src/**/*.test.ts\"",
     "clean": "rm -rf .next .turbo"
   },
   "dependencies": {
