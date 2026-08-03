@@ -29,6 +29,10 @@ import { CreateMemberDto } from './dto/create-member.dto';
 import { UpdateMemberDto } from './dto/update-member.dto';
 import { MemberListQueryDto } from './dto/member-list.query.dto';
 import {
+  ImportMembersDto,
+  ImportMembersResultDto,
+} from './dto/import-members.dto';
+import {
   MemberDto,
   MemberDetailDto,
   MemberListItemDto,
@@ -49,6 +53,16 @@ export class MembersController {
     @CurrentUser() actor: AuthenticatedUser,
   ) {
     return this.members.create(dto, actor);
+  }
+
+  @Post('import')
+  @Roles(UserRole.ADMIN)
+  @ApiCreatedResponse({ type: ImportMembersResultDto })
+  import(
+    @Body() dto: ImportMembersDto,
+    @CurrentUser() actor: AuthenticatedUser,
+  ) {
+    return this.members.importMembers(dto.members, actor);
   }
 
   @Get()
