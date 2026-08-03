@@ -18,7 +18,23 @@ enum UserRole {
   ADMIN
   FINANCE
   DEPARTMENT_LEADER
+  MEMBER_CARE
   VIEWER
+}
+
+enum CareType {
+  VISIT
+  CALL
+  PRAYER
+  COUNSEL
+  FOLLOW_UP
+}
+
+enum GivingMethod {
+  CASH
+  TRANSFER
+  CARD
+  MOBILE_MONEY
 }
 
 enum AttendanceStatus {
@@ -69,6 +85,9 @@ model Church {
   members      Member[]
   sessions     AttendanceSession[]
   serviceTypes ServiceType[]
+  careNotes    CareNote[]
+  funds        Fund[]
+  donations    Donation[]
 
   @@index([slug])
 }
@@ -103,6 +122,8 @@ model User {
   recordedSessions   AttendanceSession[] @relation("SessionRecorder")
   reviewedSessions   AttendanceSession[] @relation("SessionReviewer")
   loginSessions      Session[]
+  careNotes          CareNote[]          @relation("CareAuthor")
+  recordedDonations  Donation[]          @relation("DonationRecorder")
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
 
@@ -188,6 +209,8 @@ model Member {
 
   departments MemberDepartment[]
   attendance  Attendance[]
+  careNotes   CareNote[]
+  donations   Donation[]
 
   @@index([userId])
   @@index([status])
@@ -264,5 +287,78 @@ model Attendance {
 
   @@id([sessionId, memberId]) // composite primary key
   @@index([sessionId])
+  @@index([memberId])
+}
+
+// Pastoral care log — visits, calls, prayer requests, counselling, follow-ups.
+// One table + a `type` enum; split only if the fields genuinely diverge.
+model CareNote {
+  id           String    @id @default(uuid())
+  churchId     String
+  church       Church    @relation(fields: [churchId], references: [id], onDelete: Cascade)
+  memberId     String
+  member       Member    @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  authorId     String
+  author       User      @relation("CareAuthor", fields: [authorId], references: [id])
+  type         CareType
+  body         String
+  // Counselling notes: readable only by ADMIN and the author. Enforced in the
+  // repository so no controller can forget it.
+  confidential Boolean   @default(false)
+  followUpAt   DateTime? // set = someone owes this member a call back
+  resolvedAt   DateTime? // null + past followUpAt = overdue
+  deletedAt    DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([churchId, memberId])
+  @@index([churchId, followUpAt]) // the overdue-follow-ups queue
+}
+
+// A giving designation (Tithe, Building, Missions). Church-scoped.
+model Fund {
+  id        String   @id @default(uuid())
+  churchId  String
+  church    Church   @relation(fields: [churchId], references: [id], onDelete: Cascade)
+  name      String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  donations Donation[]
+
+  @@unique([churchId, name])
+  @@index([churchId, isActive])
+}
+
+// Append-only giving ledger. Rows are never updated or deleted — a correction
+// is a new row with `reversesId` pointing at the original and a negated amount.
+model Donation {
+  id           String       @id @default(uuid())
+  churchId     String
+  church       Church       @relation(fields: [churchId], references: [id], onDelete: Cascade)
+  memberId     String? // null = anonymous giving, which is normal
+  member       Member?      @relation(fields: [memberId], references: [id], onDelete: SetNull)
+  fundId       String
+  fund         Fund         @relation(fields: [fundId], references: [id])
+  // Minor units (kobo/cents). Never a float — binary floats cannot represent money.
+  amountMinor  Int
+  currency     String       @default("NGN")
+  method       GivingMethod
+  reference    String? // cheque no., teller no., operator reference
+  note         String?
+  // Payment-provider id. Unique => a replayed webhook is a no-op at the DB level,
+  // no dedup logic in the service.
+  providerRef  String?      @unique
+  reversesId   String?      @unique // a reversal points at exactly one original
+  reverses     Donation?    @relation("DonationReversal", fields: [reversesId], references: [id])
+  reversedBy   Donation?    @relation("DonationReversal")
+  recordedById String
+  recordedBy   User         @relation("DonationRecorder", fields: [recordedById], references: [id])
+  givenAt      DateTime
+  createdAt    DateTime     @default(now())
+
+  @@index([churchId, givenAt])
+  @@index([churchId, fundId])
   @@index([memberId])
 }
