@@ -71,8 +71,8 @@ export class InvitesService {
       expiresAt,
     });
 
-    // Returned so callers can surface/copy the link directly — useful while
-    // email delivery is still a log-only stub (notifications.service send()).
+    // Returned so callers can surface/copy the link directly — email delivery
+    // is best-effort (notifications.service send() logs failures, never throws).
     return { email: dto.email, expiresAt, inviteUrl };
   }
 

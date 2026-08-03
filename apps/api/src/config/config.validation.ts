@@ -61,6 +61,10 @@ class EnvironmentVariables {
 
   @IsString()
   @IsOptional()
+  BREVO_API_KEY?: string;
+
+  @IsString()
+  @IsOptional()
   OLLAMA_URL: string = 'http://localhost:11434';
 
   @IsString()
