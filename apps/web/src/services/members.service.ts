@@ -80,6 +80,9 @@ function query(params: ListMembersParams = {}): string {
 export const membersService = {
   list: (params?: ListMembersParams): Promise<MemberPage> =>
     api.get<MemberPage>(`/members?${query(params)}`),
+  /** Bulk create from a spreadsheet. Rows are already validated client-side. */
+  import: (members: CreateMemberInput[]) =>
+    api.post<{ imported: number }>('/members/import', { members }),
   get: (id: string) => api.get<Member>(`/members/${id}`),
   create: (input: CreateMemberInput) =>
     api.post<Member>('/members', clean(input)),
