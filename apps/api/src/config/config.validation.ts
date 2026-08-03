@@ -63,14 +63,6 @@ class EnvironmentVariables {
   @IsOptional()
   BREVO_API_KEY?: string;
 
-  @IsString()
-  @IsOptional()
-  OLLAMA_URL: string = 'http://localhost:11434';
-
-  @IsString()
-  @IsOptional()
-  OLLAMA_MODEL: string = 'llama3.2';
-
   // All three are required together — see GOOGLE_CLIENT_ID in .env.example.
   @IsString()
   @IsOptional()
@@ -83,6 +75,14 @@ class EnvironmentVariables {
   @IsString()
   @IsOptional()
   GOOGLE_CALLBACK_URL?: string;
+
+  @IsString()
+  @IsOptional()
+  ANTHROPIC_API_KEY?: string;
+
+  @IsString()
+  @IsOptional()
+  ANTHROPIC_MODEL: string = 'claude-opus-5';
 }
 
 export function configValidationSchema(config: Record<string, unknown>) {
