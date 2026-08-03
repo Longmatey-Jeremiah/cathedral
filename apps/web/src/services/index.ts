@@ -3,3 +3,4 @@ export * from './churches.service';
 export * from './members.service';
 export * from './attendance.service';
 export * from './departments.service';
+export * from './care.service';
