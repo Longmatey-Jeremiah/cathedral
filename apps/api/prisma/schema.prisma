@@ -38,6 +38,18 @@ enum DepartmentRole {
   LEADER
 }
 
+enum Sex {
+  MALE
+  FEMALE
+}
+
+enum MaritalStatus {
+  SINGLE
+  MARRIED
+  WIDOWED
+  DIVORCED
+}
+
 model Church {
   id        String   @id @default(uuid())
   name      String
@@ -138,15 +150,38 @@ model Member {
   user      User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
   churchId  String
   church    Church       @relation(fields: [churchId], references: [id], onDelete: Cascade)
+  // The membership form's "Other Names" and "Surname". Kept under the original
+  // column names — display, search and sorting across the app read these.
   firstName String
   lastName  String
-  phone     String?
+  phone     String? // Tel. No.
   avatarUrl String?
   status    MemberStatus @default(VISITOR)
   joinDate  DateTime     @default(now())
+
+  // Membership registration form. All optional: the quick-add flow captures a
+  // name and a phone, and the form is filled in later.
+  sex                   Sex?
+  dateOfBirth           DateTime?
+  placeOfBirth          String?
+  address               String?
+  placeOfResidence      String?
+  occupation            String?
+  placeOfWork           String?
+  society               String?
+  nextOfKin             String?
+  parentsName           String?
+  hometown              String?
+  maritalStatus         MaritalStatus?
+  spouseName            String?
+  spouseOccupation      String?
+  religiousDenomination String?
+  childrenNames         String[] // one name per entry; empty for none
+  declarationDate       DateTime?
+
   deletedAt DateTime? // soft delete preserves historical records
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   departments MemberDepartment[]
   attendance  Attendance[]

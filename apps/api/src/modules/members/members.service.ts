@@ -15,6 +15,7 @@ import { CreateMemberDto } from './dto/create-member.dto';
 import { UpdateMemberDto } from './dto/update-member.dto';
 import { DepartmentAssignmentDto } from './dto/department-assignment.dto';
 import { MemberListQueryDto } from './dto/member-list.query.dto';
+import { memberProfileData } from './dto/member-profile.dto';
 
 // Optimized list item — what the table renders, nothing more.
 export interface MemberListItem {
@@ -37,6 +38,7 @@ export class MembersService {
     await this.assertDepartmentsInChurch(churchId, dto.departments);
 
     const member = await this.members.create({
+      ...memberProfileData(dto),
       firstName: dto.firstName,
       lastName: dto.lastName,
       phone: dto.phone,
@@ -127,6 +129,7 @@ export class MembersService {
     }
 
     return this.members.update(id, {
+      ...memberProfileData(dto),
       firstName: dto.firstName,
       lastName: dto.lastName,
       phone: dto.phone,
