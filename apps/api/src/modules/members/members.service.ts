@@ -60,6 +60,28 @@ export class MembersService {
     return member;
   }
 
+  /**
+   * Spreadsheet import. Department assignments are ignored here — a bulk file
+   * carries the membership form, and postings are made per member afterwards.
+   */
+  async importMembers(
+    members: CreateMemberDto[],
+    actor: AuthenticatedUser,
+  ): Promise<{ imported: number }> {
+    const churchId = this.requireChurch(actor);
+    const imported = await this.members.createMany(
+      members.map((dto) => ({
+        ...memberProfileData(dto),
+        churchId,
+        firstName: dto.firstName,
+        lastName: dto.lastName,
+        phone: dto.phone,
+        status: dto.status,
+      })),
+    );
+    return { imported };
+  }
+
   async findAll(
     actor: AuthenticatedUser,
     query: MemberListQueryDto,

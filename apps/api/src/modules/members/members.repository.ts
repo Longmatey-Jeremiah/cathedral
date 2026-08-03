@@ -75,6 +75,12 @@ export class MembersRepository {
     return this.prisma.member.create({ data });
   }
 
+  /** Bulk insert for spreadsheet imports — all rows land or none do. */
+  async createMany(data: Prisma.MemberCreateManyInput[]): Promise<number> {
+    const { count } = await this.prisma.member.createMany({ data });
+    return count;
+  }
+
   update(id: string, data: Prisma.MemberUpdateInput): Promise<Member> {
     return this.prisma.member.update({ where: { id }, data });
   }

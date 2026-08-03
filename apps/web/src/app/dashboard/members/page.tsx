@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { FiUserPlus } from 'react-icons/fi';
+import { FiUploadCloud, FiUserPlus } from 'react-icons/fi';
 import {
   MembersTable,
   memberExportColumns,
@@ -59,10 +59,16 @@ export default function MembersPage() {
         }
         description="Everyone with an account in your church. Roles drive what they can see — promote leaders, retire viewers, keep the directory honest."
         action={
-          <LinkButton href="/dashboard/members/new" size="md">
-            <FiUserPlus size={16} aria-hidden />
-            Add a member
-          </LinkButton>
+          <div className="flex items-center gap-2">
+            <LinkButton href="/dashboard/members/import" size="md" variant="ghost">
+              <FiUploadCloud size={16} aria-hidden />
+              Import
+            </LinkButton>
+            <LinkButton href="/dashboard/members/new" size="md">
+              <FiUserPlus size={16} aria-hidden />
+              Add a member
+            </LinkButton>
+          </div>
         }
       />
 
