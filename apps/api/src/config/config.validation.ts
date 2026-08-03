@@ -66,6 +66,19 @@ class EnvironmentVariables {
   @IsString()
   @IsOptional()
   OLLAMA_MODEL: string = 'llama3.2';
+
+  // All three are required together — see GOOGLE_CLIENT_ID in .env.example.
+  @IsString()
+  @IsOptional()
+  GOOGLE_CLIENT_ID?: string;
+
+  @IsString()
+  @IsOptional()
+  GOOGLE_CLIENT_SECRET?: string;
+
+  @IsString()
+  @IsOptional()
+  GOOGLE_CALLBACK_URL?: string;
 }
 
 export function configValidationSchema(config: Record<string, unknown>) {
