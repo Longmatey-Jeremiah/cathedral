@@ -6,17 +6,31 @@ import { FiPlus } from 'react-icons/fi';
 import { DepartmentCard } from '@/components/departments/DepartmentCard';
 import { useDepartments } from '@/hooks/departments';
 import { useHasRole } from '@/hooks/auth';
+import { departmentsService } from '@/services/departments.service';
 import { LinkButton } from '@/components/Button';
 import { Emph } from '@/components/Emph';
 import { EmptyState } from '@/components/admin/EmptyState';
+import { ExportMenu } from '@/components/admin/ExportMenu';
 import { FilterBar } from '@/components/admin/FilterBar';
 import { PageHeader } from '@/components/admin/PageHeader';
 import { TableSkeleton } from '@/components/admin/Skeleton';
 import { Alert } from '@/components/ui/alert';
+import {
+  exportDate,
+  fetchAllPages,
+  type ExportColumn,
+} from '@/shared/lib/export';
 import { stagger } from '@/shared/lib/motion';
 import { UserRole } from '@/shared/lib/types';
+import type { Department } from '@/types/departments';
 
 const PAGE_SIZE = 25;
+
+const exportColumns: ExportColumn<Department>[] = [
+  { header: 'Name', value: (d) => d.name },
+  { header: 'Description', value: (d) => d.description },
+  { header: 'Created', value: (d) => exportDate(d.createdAt) },
+];
 
 export default function DepartmentsPage() {
   const canManage = useHasRole(UserRole.ADMIN);
@@ -68,7 +82,18 @@ export default function DepartmentsPage() {
           query={input}
           onQueryChange={setInput}
           placeholder="Search by name"
-        />
+        >
+          <ExportMenu
+            name="departments"
+            columns={exportColumns}
+            disabled={total === 0}
+            rows={() =>
+              fetchAllPages((exportPage, pageSize) =>
+                departmentsService.list({ page: exportPage, pageSize, q }),
+              )
+            }
+          />
+        </FilterBar>
       </div>
 
       <div className="mt-6">

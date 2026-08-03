@@ -6,6 +6,7 @@ import { FiArrowUpRight } from 'react-icons/fi';
 import { Avatar } from '@/components/admin/Avatar';
 import { DataTable, type Column } from '@/components/admin/DataTable';
 import { StatusBadge, type BadgeTone } from '@/components/admin/StatusBadge';
+import type { ExportColumn } from '@/shared/lib/export';
 import type { MemberListItem, MemberStatus } from '@/types/members';
 
 const STATUS: Record<MemberStatus, { tone: BadgeTone; label: string }> = {
@@ -13,6 +14,13 @@ const STATUS: Record<MemberStatus, { tone: BadgeTone; label: string }> = {
   INACTIVE: { tone: 'neutral', label: 'Inactive' },
   VISITOR: { tone: 'warning', label: 'Visitor' },
 };
+
+export const memberExportColumns: ExportColumn<MemberListItem>[] = [
+  { header: 'Name', value: (m) => m.name },
+  { header: 'Phone', value: (m) => m.phone },
+  { header: 'Status', value: (m) => STATUS[m.status].label },
+  { header: 'Departments', value: (m) => m.departmentCount },
+];
 
 function MembersTableBase({ members }: { members: MemberListItem[] }) {
   const columns: Column<MemberListItem>[] = [

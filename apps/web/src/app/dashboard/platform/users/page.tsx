@@ -2,9 +2,13 @@
 
 import { motion } from 'framer-motion';
 import { useMemo, useState } from 'react';
-import { PlatformUsersTable } from '@/components/platform-users/PlatformUsersTable';
+import {
+  PlatformUsersTable,
+  platformUserExportColumns,
+} from '@/components/platform-users/PlatformUsersTable';
 import { platformUsers } from '@/mocks/platform-users';
 import { Emph } from '@/components/Emph';
+import { ExportMenu } from '@/components/admin/ExportMenu';
 import { FilterBar } from '@/components/admin/FilterBar';
 import { KpiCard } from '@/components/admin/KpiCard';
 import { PageHeader } from '@/components/admin/PageHeader';
@@ -72,7 +76,14 @@ export default function PlatformUsersPage() {
           query={query}
           onQueryChange={setQuery}
           placeholder="Search by name, email, or church"
-        />
+        >
+          <ExportMenu
+            name="platform-users"
+            columns={platformUserExportColumns}
+            disabled={filtered.length === 0}
+            rows={() => filtered}
+          />
+        </FilterBar>
       </div>
 
       <div className="mt-6">

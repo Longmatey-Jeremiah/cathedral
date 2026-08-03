@@ -2,8 +2,12 @@
 
 import { motion } from 'framer-motion';
 import { FiMail } from 'react-icons/fi';
-import { InvitesTable } from '@/components/invites/InvitesTable';
+import {
+  InvitesTable,
+  inviteExportColumns,
+} from '@/components/invites/InvitesTable';
 import { EmptyState } from '@/components/admin/EmptyState';
+import { ExportMenu } from '@/components/admin/ExportMenu';
 import { useInvites } from '@/hooks/invites';
 import { inviteStatus } from '@/types/invites';
 import { LinkButton } from '@/components/Button';
@@ -35,10 +39,18 @@ export default function InvitesPage() {
         }
         description="Email-scoped invitations bound to a role and a single church. Tokens are hashed at rest, single-use, and expire after 72 hours by default."
         action={
-          <LinkButton href="/dashboard/invites/new" size="md">
-            <FiMail size={16} aria-hidden />
-            Send invite
-          </LinkButton>
+          <div className="flex items-center gap-2">
+            <ExportMenu
+              name="invites"
+              columns={inviteExportColumns}
+              disabled={invites.length === 0}
+              rows={() => invites}
+            />
+            <LinkButton href="/dashboard/invites/new" size="md">
+              <FiMail size={16} aria-hidden />
+              Send invite
+            </LinkButton>
+          </div>
         }
       />
 

@@ -4,13 +4,16 @@ import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/auth-context';
 import { useUsers } from '@/hooks/users';
-import { TeamTable } from '@/components/users/TeamTable';
+import { usersService } from '@/services/users.service';
+import { TeamTable, teamExportColumns } from '@/components/users/TeamTable';
 import { Emph } from '@/components/Emph';
 import { EmptyState } from '@/components/admin/EmptyState';
+import { ExportMenu } from '@/components/admin/ExportMenu';
 import { FilterBar } from '@/components/admin/FilterBar';
 import { PageHeader } from '@/components/admin/PageHeader';
 import { TableSkeleton } from '@/components/admin/Skeleton';
 import { Alert } from '@/components/ui/alert';
+import { fetchAllPages } from '@/shared/lib/export';
 import { UserRole } from '@/shared/lib/types';
 import { stagger } from '@/shared/lib/motion';
 
@@ -71,7 +74,18 @@ export default function TeamPage() {
           query={input}
           onQueryChange={setInput}
           placeholder="Search by name or email"
-        />
+        >
+          <ExportMenu
+            name="team"
+            columns={teamExportColumns}
+            disabled={total === 0}
+            rows={() =>
+              fetchAllPages((exportPage, pageSize) =>
+                usersService.list({ page: exportPage, pageSize, q }),
+              )
+            }
+          />
+        </FilterBar>
       </div>
 
       <div className="mt-6">

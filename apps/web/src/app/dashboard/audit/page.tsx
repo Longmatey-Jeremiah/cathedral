@@ -5,10 +5,20 @@ import { auditLog, timeAgo } from '@/mocks/audit';
 import { Emph } from '@/components/Emph';
 import { Avatar } from '@/components/admin/Avatar';
 import { DataTable, type Column } from '@/components/admin/DataTable';
+import { ExportMenu } from '@/components/admin/ExportMenu';
 import { PageHeader } from '@/components/admin/PageHeader';
+import type { ExportColumn } from '@/shared/lib/export';
 import { stagger } from '@/shared/lib/motion';
 
 type Entry = (typeof auditLog)[number];
+
+const exportColumns: ExportColumn<Entry>[] = [
+  { header: 'Actor', value: (e) => e.actor },
+  { header: 'Role', value: (e) => e.actorRole },
+  { header: 'Event', value: (e) => `${e.verb} ${e.target}` },
+  { header: 'IP', value: (e) => e.ip },
+  { header: 'When', value: (e) => e.at },
+];
 
 export default function AuditPage() {
   const columns: Column<Entry>[] = [
@@ -71,6 +81,13 @@ export default function AuditPage() {
           </>
         }
         description="Every meaningful action — who did what, against what, and from where. Entries are immutable; they can be exported but never edited."
+        action={
+          <ExportMenu
+            name="audit"
+            columns={exportColumns}
+            rows={() => auditLog}
+          />
+        }
       />
 
       <div className="mt-8">
