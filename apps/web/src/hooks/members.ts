@@ -57,6 +57,24 @@ export function useCreateMember(
   });
 }
 
+export function useImportMembers(
+  options?: UseMutationOptions<
+    { imported: number },
+    ApiError,
+    CreateMemberInput[]
+  >,
+) {
+  const qc = useQueryClient();
+  return useMutation<{ imported: number }, ApiError, CreateMemberInput[]>({
+    mutationFn: membersService.import,
+    onSuccess: (data, variables, onMutateResult, context) => {
+      qc.invalidateQueries({ queryKey: memberKeys.lists() });
+      options?.onSuccess?.(data, variables, onMutateResult, context);
+    },
+    ...options,
+  });
+}
+
 export function useUpdateMember(
   id: string,
   options?: UseMutationOptions<Member, ApiError, UpdateMemberInput>,

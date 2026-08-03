@@ -29,6 +29,8 @@ function make() {
     countMembersInChurch: jest.fn(),
     replaceRecords: jest.fn().mockResolvedValue(undefined),
     updateSession: jest.fn().mockResolvedValue(undefined),
+    createSession: jest.fn().mockResolvedValue(undefined),
+    findServiceTypeById: jest.fn(),
   };
   return { service: new AttendanceService(repo as never), repo };
 }
@@ -110,6 +112,56 @@ describe('AttendanceService.review', () => {
         status: AttendanceStatus.REVIEWED,
         reviewedBy: { connect: { id: 'reviewer' } },
       }),
+    );
+  });
+});
+
+describe('AttendanceService.createSession service types', () => {
+  const serviceType = (over: Record<string, unknown> = {}) => ({
+    id: 'st-1',
+    churchId: 'church-1',
+    name: 'Sunday Service',
+    isActive: true,
+    ...over,
+  });
+
+  const dto = { title: 'Sunday', date: new Date(), serviceTypeId: 'st-1' };
+
+  it('rejects a service type belonging to another church', async () => {
+    const { service, repo } = make();
+    repo.findServiceTypeById.mockResolvedValue(
+      serviceType({ churchId: 'other' }),
+    );
+    await expect(service.createSession(dto, actor())).rejects.toBeInstanceOf(
+      BadRequestException,
+    );
+    expect(repo.createSession).not.toHaveBeenCalled();
+  });
+
+  it('rejects a retired service type', async () => {
+    const { service, repo } = make();
+    repo.findServiceTypeById.mockResolvedValue(serviceType({ isActive: false }));
+    await expect(service.createSession(dto, actor())).rejects.toBeInstanceOf(
+      BadRequestException,
+    );
+    expect(repo.createSession).not.toHaveBeenCalled();
+  });
+
+  it('connects an active in-church service type', async () => {
+    const { service, repo } = make();
+    repo.findServiceTypeById.mockResolvedValue(serviceType());
+    await service.createSession(dto, actor());
+    expect(repo.createSession).toHaveBeenCalledWith(
+      expect.objectContaining({ serviceType: { connect: { id: 'st-1' } } }),
+    );
+  });
+
+  it('leaves the session unlinked when no type is given', async () => {
+    const { service, repo } = make();
+    await service.createSession({ title: 'One-off', date: new Date() }, actor());
+    expect(repo.findServiceTypeById).not.toHaveBeenCalled();
+    expect(repo.createSession).toHaveBeenCalledWith(
+      expect.not.objectContaining({ serviceType: expect.anything() }),
     );
   });
 });

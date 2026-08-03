@@ -2,9 +2,14 @@
 
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { FiUserPlus } from 'react-icons/fi';
-import { MembersTable } from '@/components/members/MembersTable';
+import { FiUploadCloud, FiUserPlus } from 'react-icons/fi';
+import {
+  MembersTable,
+  memberExportColumns,
+} from '@/components/members/MembersTable';
 import { useMembers } from '@/hooks/members';
+import { membersService } from '@/services/members.service';
+import { ExportMenu } from '@/components/admin/ExportMenu';
 import { LinkButton } from '@/components/Button';
 import { Emph } from '@/components/Emph';
 import { EmptyState } from '@/components/admin/EmptyState';
@@ -12,6 +17,7 @@ import { FilterBar } from '@/components/admin/FilterBar';
 import { PageHeader } from '@/components/admin/PageHeader';
 import { TableSkeleton } from '@/components/admin/Skeleton';
 import { Alert } from '@/components/ui/alert';
+import { fetchAllPages } from '@/shared/lib/export';
 import { stagger } from '@/shared/lib/motion';
 
 const PAGE_SIZE = 25;
@@ -53,10 +59,16 @@ export default function MembersPage() {
         }
         description="Everyone with an account in your church. Roles drive what they can see — promote leaders, retire viewers, keep the directory honest."
         action={
-          <LinkButton href="/dashboard/members/new" size="md">
-            <FiUserPlus size={16} aria-hidden />
-            Add a member
-          </LinkButton>
+          <div className="flex items-center gap-2">
+            <LinkButton href="/dashboard/members/import" size="md" variant="ghost">
+              <FiUploadCloud size={16} aria-hidden />
+              Import
+            </LinkButton>
+            <LinkButton href="/dashboard/members/new" size="md">
+              <FiUserPlus size={16} aria-hidden />
+              Add a member
+            </LinkButton>
+          </div>
         }
       />
 
@@ -65,7 +77,18 @@ export default function MembersPage() {
           query={input}
           onQueryChange={setInput}
           placeholder="Search by name or phone"
-        />
+        >
+          <ExportMenu
+            name="members"
+            columns={memberExportColumns}
+            disabled={total === 0}
+            rows={() =>
+              fetchAllPages((exportPage, pageSize) =>
+                membersService.list({ page: exportPage, pageSize, q }),
+              )
+            }
+          />
+        </FilterBar>
       </div>
 
       <div className="mt-6">

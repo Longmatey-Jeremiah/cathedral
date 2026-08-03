@@ -7,6 +7,7 @@ const toneByRole = {
   ADMIN: 'info',
   FINANCE: 'success',
   DEPARTMENT_LEADER: 'neutral',
+  MEMBER_CARE: 'info',
   VIEWER: 'neutral',
 } as const;
 

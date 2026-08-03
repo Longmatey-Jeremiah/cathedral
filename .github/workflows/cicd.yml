@@ -19,7 +19,8 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
+          # 22.18+ strips TypeScript, which the node:test checks rely on.
+          node-version: '22.x'
           cache: 'npm'
 
       - name: Install dependencies

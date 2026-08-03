@@ -15,5 +15,6 @@ export const roleLabels: Record<UserRole, string> = {
   ADMIN: 'Admin',
   FINANCE: 'Finance',
   DEPARTMENT_LEADER: 'Dept. leader',
+  MEMBER_CARE: 'Member care',
   VIEWER: 'Viewer',
 };

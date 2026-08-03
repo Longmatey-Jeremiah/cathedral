@@ -23,8 +23,16 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { InputGroup } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { ApiError } from '@/services/api';
+import { CURRENCIES } from '@/shared/lib/money';
 import { fadeUp, stagger } from '@/shared/lib/motion';
 import {
   createChurchSchema,
@@ -52,6 +60,7 @@ const defaultBlank: ChurchFormValues = {
   phone: '',
   email: '',
   isActive: true,
+  defaultCurrency: 'NGN',
 };
 
 const inlineInput =
@@ -238,6 +247,41 @@ export function ChurchForm({
                     />
                   </InputGroup>
                 </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </motion.div>
+
+        <motion.div variants={fadeUp} className="sm:max-w-[50%]">
+          <FormField
+            control={form.control}
+            name="defaultCurrency"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Default currency</FormLabel>
+                <FormControl>
+                  <Select
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    disabled={busy}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Choose a currency" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {CURRENCIES.map((c) => (
+                        <SelectItem key={c.code} value={c.code}>
+                          {c.code} — {c.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormDescription>
+                  Applied to new giving records. Existing entries keep the
+                  currency they were recorded in.
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}

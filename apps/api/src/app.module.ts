@@ -13,6 +13,8 @@ import { InvitesModule } from './modules/invites/invites.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { AiModule } from './modules/ai/ai.module';
 import { AttendanceModule } from './modules/attendance/attendance.module';
+import { CareModule } from './modules/care/care.module';
+import { GivingModule } from './modules/giving/giving.module';
 import { RolesModule } from './modules/roles/roles.module';
 
 @Module({
@@ -32,6 +34,8 @@ import { RolesModule } from './modules/roles/roles.module';
     NotificationsModule,
     AiModule,
     AttendanceModule,
+    CareModule,
+    GivingModule,
     RolesModule,
   ],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],

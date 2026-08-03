@@ -40,4 +40,11 @@ export class UpdateChurchDto {
   @IsOptional()
   @IsBoolean()
   isActive?: boolean;
+
+  @IsOptional()
+  @IsString()
+  @Matches(/^[A-Z]{3}$/, {
+    message: 'defaultCurrency must be an ISO 4217 code',
+  })
+  defaultCurrency?: string;
 }

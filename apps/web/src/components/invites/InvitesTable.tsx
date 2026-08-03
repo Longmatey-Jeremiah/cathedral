@@ -21,6 +21,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { useSendInvite } from '@/hooks/invites';
+import { exportDate, type ExportColumn } from '@/shared/lib/export';
 import { inviteStatus, type Invite } from '@/types/invites';
 
 const toneByStatus = {
@@ -34,6 +35,14 @@ const labelByStatus = {
   used: 'Accepted',
   expired: 'Expired',
 } as const;
+
+export const inviteExportColumns: ExportColumn<Invite>[] = [
+  { header: 'Email', value: (i) => i.email },
+  { header: 'Role', value: (i) => i.role },
+  { header: 'Status', value: (i) => labelByStatus[inviteStatus(i)] },
+  { header: 'Sent', value: (i) => exportDate(i.createdAt) },
+  { header: 'Expires', value: (i) => exportDate(i.expiresAt) },
+];
 
 export function InvitesTable({ invites }: { invites: Invite[] }) {
   const [viewing, setViewing] = useState<Invite | null>(null);

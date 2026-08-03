@@ -8,8 +8,20 @@ import { ConfirmInline } from '@/components/admin/ConfirmInline';
 import { DataTable, type Column } from '@/components/admin/DataTable';
 import { cn } from '@/shared/lib/cn';
 import { useDeleteChurch } from '@/hooks/churches';
+import { exportDate, type ExportColumn } from '@/shared/lib/export';
 import type { Church } from '@/types/churches';
 import { ChurchStatusBadge } from './ChurchStatusBadge';
+
+export const churchExportColumns: ExportColumn<Church>[] = [
+  { header: 'Church', value: (c) => c.name },
+  { header: 'Slug', value: (c) => c.slug },
+  { header: 'Email', value: (c) => c.email },
+  { header: 'Phone', value: (c) => c.phone },
+  { header: 'Address', value: (c) => c.address },
+  { header: 'Currency', value: (c) => c.defaultCurrency },
+  { header: 'Status', value: (c) => (c.isActive ? 'Active' : 'Inactive') },
+  { header: 'Created', value: (c) => exportDate(c.createdAt) },
+];
 
 interface Props {
   churches: Church[];

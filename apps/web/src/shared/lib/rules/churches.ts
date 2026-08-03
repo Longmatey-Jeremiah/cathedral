@@ -20,6 +20,9 @@ const baseFields = {
     .optional()
     .or(z.literal('')),
   isActive: z.boolean(),
+  defaultCurrency: z
+    .string()
+    .regex(/^[A-Z]{3}$/, 'Pick a currency'),
 };
 
 export const createChurchSchema = z.object(baseFields);
@@ -32,8 +35,19 @@ export const updateChurchSchema = z.object({
   phone: baseFields.phone,
   email: baseFields.email,
   isActive: baseFields.isActive.optional(),
+  defaultCurrency: baseFields.defaultCurrency.optional(),
 });
 export type UpdateChurchInput = z.infer<typeof updateChurchSchema>;
+
+/** What a church ADMIN may edit on their own branch — the API enforces the same set. */
+export const branchSettingsSchema = z.object({
+  name: baseFields.name,
+  address: baseFields.address,
+  phone: baseFields.phone,
+  email: baseFields.email,
+  defaultCurrency: baseFields.defaultCurrency,
+});
+export type BranchSettingsInput = z.infer<typeof branchSettingsSchema>;
 
 /** Build a URL-safe slug suggestion from a church name. */
 export function suggestSlug(name: string): string {

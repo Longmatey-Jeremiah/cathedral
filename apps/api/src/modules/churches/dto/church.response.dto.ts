@@ -6,6 +6,7 @@ export class ChurchDto {
   phone?: string | null;
   email?: string | null;
   isActive!: boolean;
+  defaultCurrency!: string;
   createdAt!: Date;
   updatedAt!: Date;
 }

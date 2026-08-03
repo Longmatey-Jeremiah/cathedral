@@ -4,7 +4,20 @@ import { Avatar } from '@/components/admin/Avatar';
 import { DataTable, type Column } from '@/components/admin/DataTable';
 import { StatusBadge } from '@/components/admin/StatusBadge';
 import { RoleSelect } from '@/components/users/RoleSelect';
+import { exportDate, type ExportColumn } from '@/shared/lib/export';
 import type { User } from '@/shared/lib/types';
+
+function fullName(u: User): string {
+  return [u.firstName, u.lastName].filter(Boolean).join(' ') || u.email;
+}
+
+export const teamExportColumns: ExportColumn<User>[] = [
+  { header: 'Name', value: fullName },
+  { header: 'Email', value: (u) => u.email },
+  { header: 'Role', value: (u) => u.role },
+  { header: 'Status', value: (u) => (u.status === 'ACTIVE' ? 'Active' : 'Pending') },
+  { header: 'Joined', value: (u) => exportDate(u.createdAt) },
+];
 
 export function TeamTable({ users }: { users: User[] }) {
   const columns: Column<User>[] = [

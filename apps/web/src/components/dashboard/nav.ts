@@ -4,8 +4,10 @@ import {
   FiCalendar,
   FiCreditCard,
   FiGrid,
+  FiHeart,
   FiHome,
   FiMail,
+  FiMessageSquare,
   FiSettings,
   FiShield,
   FiUsers,
@@ -50,10 +52,18 @@ export const navGroups: NavGroup[] = [
         roles: [UserRole.ADMIN, UserRole.DEPARTMENT_LEADER, UserRole.VIEWER],
       },
       {
+        label: 'Care',
+        href: '/dashboard/care',
+        icon: FiHeart,
+        roles: [UserRole.ADMIN, UserRole.MEMBER_CARE],
+      },
+      {
+        // Roles mirror the API guard exactly — a nav item a role cannot use is
+        // just a 403 with extra steps.
         label: 'Giving',
         href: '/dashboard/giving',
         icon: FiCreditCard,
-        roles: [UserRole.ADMIN, UserRole.FINANCE, UserRole.VIEWER],
+        roles: [UserRole.ADMIN, UserRole.FINANCE],
       },
       {
         label: 'Team & roles',
@@ -73,6 +83,8 @@ export const navGroups: NavGroup[] = [
         icon: FiBarChart2,
         roles: [UserRole.ADMIN, UserRole.FINANCE],
       },
+      // No roles: the assistant reads no church data, so there is nothing to gate.
+      // { label: 'Assistant', href: '/dashboard/assistant', icon: FiMessageSquare },
     ],
   },
   {
@@ -94,7 +106,9 @@ export const navGroups: NavGroup[] = [
   },
   {
     label: 'Account',
-    items: [{ label: 'Settings', href: '/dashboard/settings', icon: FiSettings }],
+    items: [
+      { label: 'Settings', href: '/dashboard/settings', icon: FiSettings },
+    ],
   },
 ];
 

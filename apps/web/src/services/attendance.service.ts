@@ -1,5 +1,6 @@
 import type {
   AttendanceStatus,
+  ServiceType,
   SessionDetail,
   SessionListItem,
 } from '@/types/attendance';
@@ -15,13 +16,19 @@ export type CreateSessionInput = {
   title: string;
   /** ISO date string. */
   date: string;
+  /** Omit for a one-off gathering. */
+  serviceTypeId?: string;
 };
 
 export type UpdateSessionInput = {
   title?: string;
   /** ISO date string. */
   date?: string;
+  serviceTypeId?: string;
 };
+
+export type CreateServiceTypeInput = { name: string };
+export type UpdateServiceTypeInput = { name?: string; isActive?: boolean };
 
 export type SessionPage = Paginated<SessionListItem>;
 
@@ -33,6 +40,15 @@ function query(params: ListSessionsParams = {}): string {
 }
 
 export const attendanceService = {
+  listServiceTypes: (includeInactive = false): Promise<ServiceType[]> =>
+    api.get<ServiceType[]>(
+      `/attendance/service-types?includeInactive=${includeInactive}`,
+    ),
+  createServiceType: (input: CreateServiceTypeInput) =>
+    api.post<ServiceType>('/attendance/service-types', input),
+  updateServiceType: (id: string, input: UpdateServiceTypeInput) =>
+    api.patch<ServiceType>(`/attendance/service-types/${id}`, input),
+
   list: (params?: ListSessionsParams): Promise<SessionPage> =>
     api.get<SessionPage>(`/attendance/sessions?${query(params)}`),
   get: (id: string) => api.get<SessionDetail>(`/attendance/sessions/${id}`),

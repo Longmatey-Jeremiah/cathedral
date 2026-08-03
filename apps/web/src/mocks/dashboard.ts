@@ -138,5 +138,6 @@ export const roleDescriptions: Record<UserRole, string> = {
   ADMIN: 'Church administrator',
   FINANCE: 'Finance team',
   DEPARTMENT_LEADER: 'Department leader',
+  MEMBER_CARE: 'Pastoral care',
   VIEWER: 'Read-only',
 };
