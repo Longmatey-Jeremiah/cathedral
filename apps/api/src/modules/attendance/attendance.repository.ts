@@ -1,5 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { AttendanceSession, AttendanceStatus, Prisma } from '@prisma/client';
+import {
+  AttendanceSession,
+  AttendanceStatus,
+  Prisma,
+  ServiceType,
+} from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { SessionListQueryDto } from './dto/session-list.query.dto';
 
@@ -13,6 +18,7 @@ export type SessionListRow = {
   title: string;
   date: Date;
   status: AttendanceStatus;
+  serviceType: { name: string } | null;
   recordedBy: { firstName: string | null; lastName: string | null; email: string };
   _count: { records: number };
 };
@@ -36,6 +42,7 @@ export class AttendanceRepository {
     return this.prisma.attendanceSession.findUnique({
       where: { id },
       include: {
+        serviceType: { select: { id: true, name: true } },
         recordedBy: userSelect,
         reviewedBy: userSelect,
         records: {
@@ -64,6 +71,7 @@ export class AttendanceRepository {
           title: true,
           date: true,
           status: true,
+          serviceType: { select: { name: true } },
           recordedBy: {
             select: { firstName: true, lastName: true, email: true },
           },
@@ -84,6 +92,35 @@ export class AttendanceRepository {
 
   deleteSession(id: string): Promise<AttendanceSession> {
     return this.prisma.attendanceSession.delete({ where: { id } });
+  }
+
+  // ---- Service types ---------------------------------------------------
+
+  findServiceTypes(
+    churchId: string,
+    includeInactive: boolean,
+  ): Promise<ServiceType[]> {
+    return this.prisma.serviceType.findMany({
+      where: { churchId, ...(includeInactive ? {} : { isActive: true }) },
+      orderBy: { name: 'asc' },
+    });
+  }
+
+  findServiceTypeById(id: string): Promise<ServiceType | null> {
+    return this.prisma.serviceType.findUnique({ where: { id } });
+  }
+
+  createServiceType(
+    data: Prisma.ServiceTypeCreateInput,
+  ): Promise<ServiceType> {
+    return this.prisma.serviceType.create({ data });
+  }
+
+  updateServiceType(
+    id: string,
+    data: Prisma.ServiceTypeUpdateInput,
+  ): Promise<ServiceType> {
+    return this.prisma.serviceType.update({ where: { id }, data });
   }
 
   /** How many of these member ids belong to the church (tenant guard). */

@@ -1,5 +1,11 @@
 import { Type } from 'class-transformer';
-import { IsDate, IsOptional, IsString, MaxLength } from 'class-validator';
+import {
+  IsDate,
+  IsOptional,
+  IsString,
+  IsUUID,
+  MaxLength,
+} from 'class-validator';
 
 export class UpdateSessionDto {
   @IsOptional()
@@ -11,4 +17,8 @@ export class UpdateSessionDto {
   @Type(() => Date)
   @IsDate()
   date?: Date;
+
+  @IsOptional()
+  @IsUUID()
+  serviceTypeId?: string;
 }

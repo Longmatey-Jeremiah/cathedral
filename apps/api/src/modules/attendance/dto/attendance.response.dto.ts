@@ -6,6 +6,7 @@ export class AttendanceSessionDto {
   title!: string;
   date!: Date;
   status!: AttendanceStatus;
+  serviceTypeId?: string | null;
   recordedById!: string;
   reviewedById?: string | null;
   reviewedAt?: Date | null;
@@ -19,6 +20,8 @@ export class SessionListItemDto {
   title!: string;
   date!: Date;
   status!: AttendanceStatus;
+  /** Name of the service type, or null for a one-off gathering. */
+  serviceType!: string | null;
   recordedBy!: string;
   presentCount!: number;
 }
@@ -36,6 +39,7 @@ export class PresentMemberDto {
 
 /** GET /attendance/sessions/:id — session plus recorder, reviewer and roll. */
 export class SessionDetailDto extends AttendanceSessionDto {
+  serviceType!: { id: string; name: string } | null;
   recordedBy!: SessionPersonDto;
   reviewedBy!: SessionPersonDto | null;
   present!: PresentMemberDto[];
