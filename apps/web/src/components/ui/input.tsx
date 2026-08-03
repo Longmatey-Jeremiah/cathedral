@@ -49,9 +49,17 @@ interface InputGroupProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 /**
- * Wraps an `Input` and adds leading / trailing slots. The underlying input
- * should pass `className="h-11 flex-1 border-0 bg-transparent p-0 focus:ring-0"`.
+ * Class for an `Input` nested inside an `InputGroup`: drops the inner frame so
+ * the group draws the border and focus ring once, not twice.
+ *
+ *   <InputGroup startAdornment={<FiUser />}>
+ *     <Input className={inlineInput} {...field} />
+ *   </InputGroup>
  */
+export const inlineInput =
+  'h-11 flex-1 border-0 bg-transparent p-0 shadow-none focus:shadow-none';
+
+/** Wraps an `Input` (see `inlineInput`) and adds leading / trailing slots. */
 export function InputGroup({
   className,
   invalid,
