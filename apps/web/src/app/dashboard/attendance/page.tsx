@@ -7,20 +7,36 @@ import { useState } from 'react';
 import { FiArrowUpRight, FiCalendar, FiPlus, FiTrash2 } from 'react-icons/fi';
 import { useDeleteSession, useSessions } from '@/hooks/attendance';
 import { useHasRole } from '@/hooks/auth';
+import { attendanceService } from '@/services/attendance.service';
 import { LinkButton } from '@/components/Button';
 import { ConfirmInline } from '@/components/admin/ConfirmInline';
 import { DataTable, type Column } from '@/components/admin/DataTable';
 import { EmptyState } from '@/components/admin/EmptyState';
+import { ExportMenu } from '@/components/admin/ExportMenu';
 import { Emph } from '@/components/Emph';
 import { PageHeader } from '@/components/admin/PageHeader';
 import { TableSkeleton } from '@/components/admin/Skeleton';
 import { StatusPill } from '@/components/attendance/StatusPill';
 import { Alert } from '@/components/ui/alert';
 import { cn } from '@/shared/lib/cn';
+import {
+  exportDate,
+  fetchAllPages,
+  type ExportColumn,
+} from '@/shared/lib/export';
 import { stagger } from '@/shared/lib/motion';
 import type { SessionListItem } from '@/types/attendance';
 
 const PAGE_SIZE = 25;
+
+const exportColumns: ExportColumn<SessionListItem>[] = [
+  { header: 'Service', value: (s) => s.title },
+  { header: 'Service type', value: (s) => s.serviceType },
+  { header: 'Date', value: (s) => exportDate(s.date) },
+  { header: 'Recorded by', value: (s) => s.recordedBy },
+  { header: 'Status', value: (s) => s.status },
+  { header: 'Present', value: (s) => s.presentCount },
+];
 
 const columns: Column<SessionListItem>[] = [
   {
@@ -151,10 +167,22 @@ export default function AttendancePage() {
         }
         description="Record who showed up. Create a service, mark the roll, keep an honest history."
         action={
-          <LinkButton href="/dashboard/attendance/new" size="md">
-            <FiPlus size={16} aria-hidden />
-            New service
-          </LinkButton>
+          <div className="flex items-center gap-2">
+            <ExportMenu
+              name="attendance"
+              columns={exportColumns}
+              disabled={total === 0}
+              rows={() =>
+                fetchAllPages((exportPage, pageSize) =>
+                  attendanceService.list({ page: exportPage, pageSize }),
+                )
+              }
+            />
+            <LinkButton href="/dashboard/attendance/new" size="md">
+              <FiPlus size={16} aria-hidden />
+              New service
+            </LinkButton>
+          </div>
         }
       />
 
