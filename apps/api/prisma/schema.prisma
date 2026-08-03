@@ -51,15 +51,17 @@ enum MaritalStatus {
 }
 
 model Church {
-  id        String   @id @default(uuid())
-  name      String
-  slug      String   @unique
-  address   String?
-  phone     String?
-  email     String?
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              String   @id @default(uuid())
+  name            String
+  slug            String   @unique
+  address         String?
+  phone           String?
+  email           String?
+  isActive        Boolean  @default(true)
+  // ISO 4217. Seeds the currency on new donations; existing rows keep theirs.
+  defaultCurrency String   @default("NGN")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   users        User[]
   invites      UserInvite[]

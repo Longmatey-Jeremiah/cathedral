@@ -8,6 +8,8 @@ export interface Church {
   phone: string | null;
   email: string | null;
   isActive: boolean;
+  /** ISO 4217 code used to seed new donations in this branch. */
+  defaultCurrency: string;
   createdAt: string;
   updatedAt: string;
 }

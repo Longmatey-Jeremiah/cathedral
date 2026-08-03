@@ -63,14 +63,16 @@ export class ChurchesController {
     return this.churches.findById(id, user);
   }
 
+  /** ADMIN may edit their own branch's settings; the service picks the fields. */
   @Patch(':id')
-  @Roles(UserRole.SUPER_ADMIN)
+  @Roles(UserRole.SUPER_ADMIN, UserRole.ADMIN)
   @ApiOkResponse({ type: ChurchDto })
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: UpdateChurchDto,
+    @CurrentUser() actor: AuthenticatedUser,
   ) {
-    return this.churches.update(id, dto);
+    return this.churches.update(id, dto, actor);
   }
 
   @Delete(':id')
