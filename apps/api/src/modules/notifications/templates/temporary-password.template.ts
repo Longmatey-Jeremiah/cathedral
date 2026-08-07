@@ -18,5 +18,6 @@ Sign in at ${appUrl}/login. You will be required to change this password on firs
 <p>An account has been created for you on the Church Management Platform.</p>
 <p><strong>Temporary password:</strong> <code>${temporaryPassword}</code></p>
 <p>Sign in at <a href="${appUrl}/login">${appUrl}/login</a>. You will be required to change this password on first login.</p>`;
-  return { subject, html, text };
+  const sms = `Church Platform: your account is ready. Temp password: ${temporaryPassword}. Sign in at ${appUrl}/login`;
+  return { subject, html, text, sms };
 }

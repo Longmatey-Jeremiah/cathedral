@@ -63,6 +63,12 @@ class EnvironmentVariables {
   @IsOptional()
   BREVO_API_KEY?: string;
 
+  // Alphanumeric SMS sender id, max 11 chars — see BREVO_SMS_SENDER in
+  // .env.example. Defaults to "ChurchApp" if unset.
+  @IsString()
+  @IsOptional()
+  BREVO_SMS_SENDER?: string;
+
   // All three are required together — see GOOGLE_CLIENT_ID in .env.example.
   @IsString()
   @IsOptional()
