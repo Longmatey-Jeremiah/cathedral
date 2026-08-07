@@ -21,6 +21,7 @@ import {
 } from '../../common/dto/pagination.query.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateNotificationPreferencesDto } from './dto/update-notification-preferences.dto';
 import { UsersRepository } from './users.repository';
 
 export type PublicUser = Omit<User, 'password'>;
@@ -65,7 +66,11 @@ export class UsersService {
     });
 
     await this.notifications.sendTemporaryPassword({
-      to: user.email,
+      recipient: {
+        email: user.email,
+        phone: user.phone,
+        notifyVia: user.notifyVia,
+      },
       firstName: user.firstName,
       temporaryPassword: tempPassword,
     });
@@ -132,6 +137,16 @@ export class UsersService {
       throw new ForbiddenException('Only a super admin can promote to super admin');
     }
     const updated = await this.users.update(id, dto);
+    return this.toPublic(updated);
+  }
+
+  /** Self-service only — always the caller's own row, no tenant/role checks
+   *  needed beyond "you are logged in". */
+  async updateMyNotificationPreferences(
+    actor: AuthenticatedUser,
+    dto: UpdateNotificationPreferencesDto,
+  ): Promise<PublicUser> {
+    const updated = await this.users.update(actor.id, dto);
     return this.toPublic(updated);
   }
 

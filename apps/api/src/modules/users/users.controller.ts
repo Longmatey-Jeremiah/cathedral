@@ -25,6 +25,7 @@ import { PaginationQueryDto } from '../../common/dto/pagination.query.dto';
 import { ApiPaginatedResponse } from '../../common/dto/api-paginated-response';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateNotificationPreferencesDto } from './dto/update-notification-preferences.dto';
 import { UsersService } from './users.service';
 import { UserDto } from './dto/user.response.dto';
 
@@ -53,6 +54,24 @@ export class UsersController {
     @Query() query: PaginationQueryDto,
   ) {
     return this.users.findAll(actor, query);
+  }
+
+  // No @Roles() on either route below — every authenticated role may read
+  // and set their own delivery preference, regardless of the coarser role
+  // list findOne()/update() enforce for looking up other users.
+  @Get('me')
+  @ApiOkResponse({ type: UserDto })
+  findMe(@CurrentUser() actor: AuthenticatedUser) {
+    return this.users.findById(actor.id, actor);
+  }
+
+  @Patch('me/notification-preferences')
+  @ApiOkResponse({ type: UserDto })
+  updateMyNotificationPreferences(
+    @Body() dto: UpdateNotificationPreferencesDto,
+    @CurrentUser() actor: AuthenticatedUser,
+  ) {
+    return this.users.updateMyNotificationPreferences(actor, dto);
   }
 
   @Get(':id')

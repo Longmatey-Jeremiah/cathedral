@@ -1,4 +1,4 @@
-import { UserRole, UserStatus } from '@prisma/client';
+import { NotificationChannel, UserRole, UserStatus } from '@prisma/client';
 
 /** Public user shape — the password hash is never serialized. */
 export class UserDto {
@@ -10,6 +10,8 @@ export class UserDto {
   status!: UserStatus;
   mustChangePassword!: boolean;
   churchId?: string | null;
+  phone?: string | null;
+  notifyVia!: NotificationChannel;
   createdAt!: Date;
   updatedAt!: Date;
 }
