@@ -5,6 +5,7 @@ import { UserRole } from '@/shared/lib/types';
 import { useAuth } from '@/hooks/auth-context';
 import { useHasRole } from '@/hooks/auth';
 import { BranchSettingsCard } from '@/components/settings/BranchSettingsCard';
+import { DeliveryPreferencesCard } from '@/components/settings/DeliveryPreferencesCard';
 import { PreferencesCard } from '@/components/settings/PreferencesCard';
 import { ProfileForm } from '@/components/settings/ProfileForm';
 import { SessionsList } from '@/components/settings/SessionsList';
@@ -69,7 +70,8 @@ export default function SettingsPage() {
             </TabsContent>
           ) : null}
 
-          <TabsContent value="notifications">
+          <TabsContent value="notifications" className="space-y-6">
+            <DeliveryPreferencesCard />
             <PreferencesCard />
           </TabsContent>
 

@@ -4,3 +4,4 @@ export * from './departments';
 export * from './members';
 export * from './care';
 export * from './giving';
+export * from './users';

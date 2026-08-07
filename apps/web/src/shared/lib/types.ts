@@ -28,6 +28,14 @@ export const UserStatus = {
 } as const;
 export type UserStatus = (typeof UserStatus)[keyof typeof UserStatus];
 
+export const NotificationChannel = {
+  EMAIL: 'EMAIL',
+  SMS: 'SMS',
+  BOTH: 'BOTH',
+} as const;
+export type NotificationChannel =
+  (typeof NotificationChannel)[keyof typeof NotificationChannel];
+
 export interface User {
   id: string;
   email: string;
@@ -37,6 +45,8 @@ export interface User {
   status: UserStatus;
   mustChangePassword: boolean;
   churchId: string | null;
+  phone: string | null;
+  notifyVia: NotificationChannel;
   createdAt: string;
   updatedAt: string;
 }
