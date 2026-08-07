@@ -2,8 +2,12 @@
 
 import Link from 'next/link';
 import { forwardRef, type ReactNode } from 'react';
-import { Button as UiButton, type ButtonProps as UiButtonProps } from './ui/button';
+import {
+  Button as UiButton,
+  type ButtonProps as UiButtonProps,
+} from './ui/button';
 import { cn } from '@/shared/lib/cn';
+import { Loader2 } from 'lucide-react';
 
 /**
  * Legacy `Button` / `LinkButton` shim used by the marketing landing.
@@ -35,9 +39,12 @@ interface LinkButtonProps {
   children: ReactNode;
   onClick?: () => void;
   fullWidth?: boolean;
+  isLoading?: boolean;
 }
 
 export function LinkButton({
+  isLoading,
+
   href,
   variant = 'primary',
   size = 'md',
@@ -54,7 +61,11 @@ export function LinkButton({
       className={cn(fullWidth && 'w-full', className)}
     >
       <Link href={href} onClick={onClick}>
-        {children}
+        {isLoading ? (
+          <Loader2 className="mr-2 animate-spin" size={16} />
+        ) : (
+          children
+        )}
       </Link>
     </UiButton>
   );
