@@ -13,6 +13,12 @@ enum UserStatus {
   PENDING
 }
 
+enum NotificationChannel {
+  EMAIL
+  SMS
+  BOTH
+}
+
 enum UserRole {
   SUPER_ADMIN
   ADMIN
@@ -116,6 +122,10 @@ model User {
   role               UserRole
   status             UserStatus          @default(PENDING)
   mustChangePassword Boolean             @default(false)
+  // Notification delivery. SMS/BOTH need a phone on file — the sender falls
+  // back to email if one is missing rather than dropping the notification.
+  phone              String?
+  notifyVia          NotificationChannel @default(EMAIL)
   churchId           String?
   church             Church?             @relation(fields: [churchId], references: [id], onDelete: Cascade)
   member             Member?
