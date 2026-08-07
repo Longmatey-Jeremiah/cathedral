@@ -8,6 +8,7 @@ import {
 import {
   AttendanceSession,
   AttendanceStatus,
+  NotificationChannel,
   Prisma,
   ServiceType,
 } from '@prisma/client';
@@ -16,6 +17,8 @@ import {
   isSuperAdmin,
 } from '../../common/types/authenticated-user';
 import { Paginated } from '../../common/dto/pagination.query.dto';
+import { NotificationsService } from '../notifications/notifications.service';
+import { UsersRepository } from '../users/users.repository';
 import { AttendanceRepository } from './attendance.repository';
 import { CreateSessionDto } from './dto/create-session.dto';
 import { UpdateSessionDto } from './dto/update-session.dto';
@@ -49,7 +52,11 @@ export interface SessionListItem {
 
 @Injectable()
 export class AttendanceService {
-  constructor(private readonly attendance: AttendanceRepository) {}
+  constructor(
+    private readonly attendance: AttendanceRepository,
+    private readonly notifications: NotificationsService,
+    private readonly users: UsersRepository,
+  ) {}
 
   async createSession(
     dto: CreateSessionDto,
@@ -270,11 +277,29 @@ export class AttendanceService {
     if (session.status !== AttendanceStatus.SUBMITTED) {
       throw new ConflictException('Only a submitted roll can be reviewed');
     }
-    return this.attendance.updateSession(id, {
+    const reviewed = await this.attendance.updateSession(id, {
       status: AttendanceStatus.REVIEWED,
       reviewedBy: { connect: { id: actor.id } },
       reviewedAt: new Date(),
     });
+
+    // Fire-and-log: notifications.service never throws, so a delivery
+    // failure can't undo the review that already committed above. The JWT
+    // payload doesn't carry phone/notifyVia, so re-fetch the reviewer.
+    const presentCount = await this.attendance.countPresent(id);
+    const reviewer = await this.users.findById(actor.id);
+    await this.notifications.sendAttendanceReviewed({
+      recipient: {
+        email: actor.email,
+        phone: reviewer?.phone,
+        notifyVia: reviewer?.notifyVia ?? NotificationChannel.EMAIL,
+      },
+      sessionTitle: reviewed.title,
+      sessionDate: reviewed.date,
+      presentCount,
+    });
+
+    return reviewed;
   }
 
   async remove(

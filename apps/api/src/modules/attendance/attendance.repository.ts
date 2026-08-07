@@ -123,6 +123,11 @@ export class AttendanceRepository {
     return this.prisma.serviceType.update({ where: { id }, data });
   }
 
+  /** Present-count for a session, e.g. for a summary notification. */
+  countPresent(sessionId: string): Promise<number> {
+    return this.prisma.attendance.count({ where: { sessionId } });
+  }
+
   /** How many of these member ids belong to the church (tenant guard). */
   countMembersInChurch(churchId: string, ids: string[]): Promise<number> {
     return this.prisma.member.count({

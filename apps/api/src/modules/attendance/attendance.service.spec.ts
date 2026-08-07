@@ -27,12 +27,30 @@ function make() {
   const repo = {
     findSessionById: jest.fn(),
     countMembersInChurch: jest.fn(),
+    countPresent: jest.fn().mockResolvedValue(0),
     replaceRecords: jest.fn().mockResolvedValue(undefined),
-    updateSession: jest.fn().mockResolvedValue(undefined),
+    updateSession: jest
+      .fn()
+      .mockResolvedValue(session({ title: 't', date: new Date() })),
     createSession: jest.fn().mockResolvedValue(undefined),
     findServiceTypeById: jest.fn(),
   };
-  return { service: new AttendanceService(repo as never), repo };
+  const notifications = {
+    sendAttendanceReviewed: jest.fn().mockResolvedValue(undefined),
+  };
+  const users = {
+    findById: jest.fn().mockResolvedValue(null),
+  };
+  return {
+    service: new AttendanceService(
+      repo as never,
+      notifications as never,
+      users as never,
+    ),
+    repo,
+    notifications,
+    users,
+  };
 }
 
 describe('AttendanceService.mark', () => {
@@ -111,6 +129,44 @@ describe('AttendanceService.review', () => {
       expect.objectContaining({
         status: AttendanceStatus.REVIEWED,
         reviewedBy: { connect: { id: 'reviewer' } },
+      }),
+    );
+  });
+
+  it('emails the reviewer a summary of the roll they just signed off', async () => {
+    const { service, repo, notifications } = make();
+    repo.findSessionById.mockResolvedValue(
+      session({ status: AttendanceStatus.SUBMITTED, recordedById: 'taker' }),
+    );
+    repo.countPresent.mockResolvedValue(12);
+    await service.review('s', actor({ id: 'reviewer', email: 'r@e.com' }));
+    expect(repo.countPresent).toHaveBeenCalledWith('s');
+    expect(notifications.sendAttendanceReviewed).toHaveBeenCalledWith(
+      expect.objectContaining({
+        recipient: expect.objectContaining({ email: 'r@e.com' }),
+        presentCount: 12,
+      }),
+    );
+  });
+
+  it('routes the reviewed-roll email through the reviewer\'s own channel preference', async () => {
+    const { service, repo, notifications, users } = make();
+    repo.findSessionById.mockResolvedValue(
+      session({ status: AttendanceStatus.SUBMITTED, recordedById: 'taker' }),
+    );
+    users.findById.mockResolvedValue({
+      phone: '+15005550001',
+      notifyVia: 'SMS',
+    });
+    await service.review('s', actor({ id: 'reviewer', email: 'r@e.com' }));
+    expect(users.findById).toHaveBeenCalledWith('reviewer');
+    expect(notifications.sendAttendanceReviewed).toHaveBeenCalledWith(
+      expect.objectContaining({
+        recipient: {
+          email: 'r@e.com',
+          phone: '+15005550001',
+          notifyVia: 'SMS',
+        },
       }),
     );
   });
